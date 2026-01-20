@@ -42,6 +42,3 @@ opensrc/
 .codex/
 .claude/
 .cursor/
-
-# Repo specific
-docs/reference/
