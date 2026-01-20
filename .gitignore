@@ -38,7 +38,8 @@ bun.lockb
 # opensrc - source code for packages
 opensrc/
 
-# Agents
-.codex/
+# Editors and agents
+.vscode/
+.idea/
 .claude/
 .cursor/
