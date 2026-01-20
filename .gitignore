@@ -23,6 +23,9 @@ pnpm-debug.log*
 .bun/
 bun.lockb
 
+# Local Codex workspace data
+.codex/
+
 # Tooling caches
 .eslintcache
 .parcel-cache/
@@ -34,3 +37,8 @@ bun.lockb
 
 # opensrc - source code for packages
 opensrc/
+
+# Agents
+.codex/
+.claude/
+.cursor/
