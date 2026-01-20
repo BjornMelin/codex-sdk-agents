@@ -40,4 +40,3 @@ const parsed = JSON.parse(turn.finalResponse) as unknown;
 const validated = Output.parse(parsed);
 console.log(validated);
 ```
-

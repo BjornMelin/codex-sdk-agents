@@ -33,4 +33,3 @@ This is the cleanest way to orchestrate multi-step development flows from an ext
 
 - OpenAI Cookbook: “Building Consistent Workflows with Codex CLI & Agents SDK”
 - `docs/reference/codex-exec.md` (MCP tool calls appear as items)
-

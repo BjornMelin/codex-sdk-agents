@@ -48,4 +48,3 @@ What changes, and why.
 
 - `docs/reference/non-interactive.md` (automation patterns)
 - Codex cookbook on modernization and planning (see OpenAI Cookbook “Modernizing your Codebase with Codex”)
-

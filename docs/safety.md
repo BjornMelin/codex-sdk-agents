@@ -19,4 +19,3 @@ Treat these as separate controls:
 - Approval policy controls *when a human must confirm* before running a command.
 
 In CI, use explicit flags and avoid “full access” unless the job is externally sandboxed.
-

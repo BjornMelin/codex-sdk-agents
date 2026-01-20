@@ -31,4 +31,3 @@ In practice, workflows usually care about:
 - Streaming example: `examples/stream.ts`
 - Source-derived item definitions: `docs/reference/codex-exec.md`
 - SDK item types: see `ThreadEvent` and `ThreadItem` in `@openai/codex-sdk`
-

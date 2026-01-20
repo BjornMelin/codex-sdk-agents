@@ -32,4 +32,3 @@ For automation in CI, `codex exec --json` + `--output-schema` is a common patter
 - Resume mode supports multi-stage pipelines.
 
 See: `docs/reference/non-interactive.md`
-
