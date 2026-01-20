@@ -17,6 +17,7 @@ pnpm-debug.log*
 # Environment files
 .env
 .env.*
+!.env.example
 
 # Bun
 .bun/
