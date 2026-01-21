@@ -19,10 +19,6 @@ pnpm-debug.log*
 .env.*
 !.env.example
 
-# Bun
-.bun/
-bun.lockb
-
 # Local Codex workspace data
 .codex/
 
@@ -44,4 +40,3 @@ opensrc/
 .claude/
 .cursor/
 .agent/
-

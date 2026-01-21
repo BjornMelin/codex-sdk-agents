@@ -1,20 +1,19 @@
 # codex-toolloop
 
 [![Status](https://img.shields.io/badge/status-alpha-orange?style=flat-square)](https://github.com/BjornMelin/codex-toolloop)
-[![Last commit](https://img.shields.io/github/last-commit/BjornMelin/codex-toolloop?style=flat-square)](https://github.com/BjornMelin/codex-toolloop/commits/main)
 [![License](https://img.shields.io/github/license/BjornMelin/codex-toolloop?style=flat-square)](./LICENSE)
 
-[![Runtime](https://img.shields.io/badge/runtime-bun-black?style=flat-square&logo=bun)](https://bun.sh)
+[![Runtime](https://img.shields.io/badge/runtime-node.js-339933?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org)
 [![Language](https://img.shields.io/badge/language-typescript-3178c6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Tests](https://img.shields.io/badge/tests-vitest-6E9F18?style=flat-square&logo=vitest&logoColor=white)](https://vitest.dev)
-[![AI SDK](https://img.shields.io/badge/Vercel%20AI%20SDK-v6-black?style=flat-square&logo=vercel)](https://ai-sdk.dev)
+[![AI SDK v6](https://img.shields.io/badge/Vercel%20AI%20SDK-v6-black?style=flat-square&logo=vercel)](https://ai-sdk.dev)
 [![Codex](https://img.shields.io/badge/OpenAI-Codex-black?style=flat-square&logo=openai)](https://developers.openai.com/codex)
 [![Schema](https://img.shields.io/badge/schema-zod%20v4-blue?style=flat-square)](https://zod.dev)
 [![MCP](https://img.shields.io/badge/protocol-MCP-black?style=flat-square)](https://modelcontextprotocol.io)
 
 Local-first coding-agent workflows built on OpenAI Codex and Vercel AI SDK v6.
 
-`codex-toolloop` is a Bun-powered TypeScript CLI and runtime for building reproducible, multi-step coding-agent workflows: plan, research, implement, test, review, and produce audit-grade run artifacts (traces, diffs, reports). It is designed to integrate tightly with Codex CLI authentication (ChatGPT account usage) while using AI SDK agent patterns for orchestration and future UI integration.
+`codex-toolloop` is a Node.js TypeScript CLI and runtime for building reproducible, multi-step coding-agent workflows: plan, research, implement, test, review, and produce audit-grade run artifacts (traces, diffs, reports). It is designed to integrate tightly with Codex CLI authentication (ChatGPT account usage) while using AI SDK agent patterns for orchestration and future UI integration.
 
 ---
 
@@ -38,7 +37,7 @@ Local-first coding-agent workflows built on OpenAI Codex and Vercel AI SDK v6.
   - [Configuration](#configuration)
     - [Config file](#config-file)
   - [Tooling and integrations](#tooling-and-integrations)
-    - [Extensible tool servers (optional)](#extensible-tool-servers-optional)
+    - [Extensible MCP tool servers](#extensible-mcp-tool-servers)
   - [Backends](#backends)
   - [Run artifacts](#run-artifacts)
   - [Development](#development)
@@ -126,8 +125,8 @@ sequenceDiagram
 
 ### Prerequisites
 
-- Bun (runtime)
-- Node.js (used for running Vitest reliably)
+- Node.js v24 LTS (runtime; required for AI SDK MCP STDIO transport)
+- pnpm (recommended via Corepack)
 - Codex CLI installed and authenticated (ChatGPT login or API key)
 - Git (recommended)
 
@@ -143,28 +142,29 @@ Codex CLI references:
 git clone https://github.com/BjornMelin/codex-toolloop
 cd codex-toolloop
 
-bun install
+pnpm install
 
 # verify environment
-bun run dev:cli -- doctor
+pnpm dev:cli -- doctor
 ```
+
+pnpm v10 blocks dependency lifecycle scripts by default. This repo uses a minimal, audited allowlist
+in `pnpm-workspace.yaml` (currently `@biomejs/biome` and `esbuild`). If you add dependencies that
+require build scripts, update the allowlist (or run `pnpm approve-builds`).
 
 ### Start local tool servers (optional, recommended)
 
 ```bash
-bun run dev:cli -- tools start
+# Planned (SPEC 010 + SPEC 040)
+# pnpm dev:cli -- mcp start
 ```
 
 ### Run a workflow
 
 ```bash
-# run an end-to-end feature workflow from a SPEC
-bun run dev:cli -- run spec ./specs/040-cli.md
-
-# or run a named workflow with policies
-bun run dev:cli -- run workflow feature-dev \
-  --approval on-failure \
-  --sandbox workspace-write
+# Planned (SPEC 030 + SPEC 040)
+# pnpm dev:cli -- run spec ./docs/specs/040-cli.md
+# pnpm dev:cli -- run workflow feature-dev --approval on-failure --sandbox workspace-write
 ```
 
 ---
@@ -173,14 +173,17 @@ bun run dev:cli -- run workflow feature-dev \
 
 ### Commands (overview)
 
+Current implementation status (SPEC 000): only `doctor` is implemented. Other commands below
+are part of the roadmap and are tracked by their corresponding SPECs.
+
 | Command | Purpose |
 | --- | --- |
-| `toolloop doctor` | Validate environment (bun, node, codex, auth hints) |
-| `toolloop tools start` | Start local tool servers |
-| `toolloop run spec <path>` | Execute a SPEC-driven run |
-| `toolloop run workflow <name>` | Execute a named workflow |
-| `toolloop session list` | List runs, thread IDs, and statuses |
-| `toolloop session inspect <runId>` | Inspect run artifacts and report |
+| `codex-toolloop doctor` | Validate environment (node, pnpm, codex) |
+| `codex-toolloop mcp start` | Start local tool servers (planned) |
+| `codex-toolloop run spec <path>` | Execute a SPEC-driven run (planned) |
+| `codex-toolloop run workflow <name>` | Execute a named workflow (planned) |
+| `codex-toolloop session list` | List runs, thread IDs, and statuses (planned) |
+| `codex-toolloop session inspect <runId>` | Inspect run artifacts and report (planned) |
 
 ### Typical workflows
 
@@ -225,17 +228,33 @@ model = "gpt-5.2-codex"
 
 ## Tooling and integrations
 
-Tooling is implemented as a **tool substrate** that can be discovered and called at runtime. This keeps your workflows extensible without hardcoding every capability into the CLI.
+Tooling is implemented as a **shared tool substrate (MCP)** that can be discovered and called at runtime. This keeps workflows extensible without hardcoding every capability into the CLI.
 
-### Extensible tool servers (optional)
+Codex ToolLoop uses AI SDK v6 primitives for MCP and dynamic tooling:
 
-You can attach tool servers to:
+- MCP clients via `createMCPClient()` (`@ai-sdk/mcp`)
+- Dynamic tools via `dynamicTool()` (for large or evolving tool catalogs)
+
+### Extensible MCP tool servers
+
+You can attach MCP servers to:
 
 - provide repo utilities (search, read, directory listing)
 - fetch documentation from allowlisted domains
 - connect to third-party tool ecosystems
 
-`codex-toolloop` supports dynamic tool discovery and role-based allowlists. Tool servers can be local-only (stdio) or local HTTP.
+Key design point: **avoid tool-definition context bloat**.
+
+- Tools are grouped into small **bundles** and loaded on-demand per workflow/role/step (ADR 0009, SPEC 011).
+- **Default transport is HTTP** (deployable); **stdio is local-only** and may require Node.js.
+- For huge catalogs, we expose only a small set of MCP meta-tools implemented with `dynamicTool()` (SPEC 011) rather than injecting every tool schema.
+
+See:
+
+- ADR 0003: `docs/adr/0003-mcp-tooling.md`
+- ADR 0009: `docs/adr/0009-dynamic-tool-loading.md`
+- SPEC 010: `docs/specs/010-mcp-platform.md`
+- SPEC 011: `docs/specs/011-dynamic-tool-loading.md`
 
 ---
 
@@ -286,19 +305,19 @@ This is designed for:
 apps/
   cli/                # CLI entrypoint and streaming UX
 packages/
-  oracle/             # runtime: workflows, steps, artifacts, policies
+  codex-toolloop/      # runtime: workflows, steps, artifacts, policies
   codex/              # codex backends (app-server, exec, sdk)
   mcp/                # tool substrate + local tool servers
   workflows/          # named workflows and role definitions
   testkit/            # fixtures, temp dirs, mocks
 docs/                 # PRD, architecture, ADRs
-specs/                # implementation specs
+  specs/              # implementation specs
 ```
 
 ### Build
 
 ```bash
-bun run build
+pnpm build
 ```
 
 ---
@@ -314,13 +333,13 @@ Vitest is used for:
 Run tests:
 
 ```bash
-bun run test
+pnpm test
 ```
 
 Run typecheck:
 
 ```bash
-bun run typecheck
+pnpm typecheck
 ```
 
 ---
@@ -328,9 +347,9 @@ bun run typecheck
 ## Docs
 
 - PRD: `docs/PRD.md`
-- Architecture: `docs/ARCHITECTURE.md`
+- Architecture: `docs/architecture.md`
 - ADRs: `docs/adr/`
-- Specs: `specs/`
+- Specs: `docs/specs/`
 
 ---
 
@@ -351,7 +370,7 @@ Contributions are welcome.
 Recommended flow:
 
 1. Open an issue describing the use case and expected behavior.
-2. Add or update a SPEC under `specs/` for non-trivial changes.
+2. Add or update a SPEC under `docs/specs/` for non-trivial changes.
 3. Add tests (unit or integration) for behavior changes.
 4. Keep changes small and focused.
 
