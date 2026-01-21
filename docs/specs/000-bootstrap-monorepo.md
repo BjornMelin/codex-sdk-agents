@@ -1,152 +1,84 @@
-# SPEC 000: Bootstrap the Codex ToolLoop monorepo (Bun + TS strict + Zod v4.3.5 + Vitest)
+# SPEC 000: Bootstrap the Codex ToolLoop monorepo (Node v24 LTS + pnpm + TS strict + Zod v4.3.5 + Vitest)
 
-You are implementing the foundation repository scaffolding for Codex ToolLoop CLI.
+Status: **Implemented** (updated for Node v24 LTS + pnpm)
 
 ## Objectives
 
-1. Create a Bun workspace monorepo with strict TypeScript and consistent formatting.
-2. Pin Zod to v4.3.5.
-3. Add Vitest configuration and a working “hello unit test” and “hello type test.”
-4. Add an `codex-toolloop doctor` skeleton command that prints environment checks (no Codex calls yet).
-5. Provide a consistent internal package structure for later specs.
+1. Establish a minimal, strict TypeScript monorepo structure.
+2. Provide a bootstrap CLI entrypoint (`codex-toolloop doctor`).
+3. Standardize lint/format (Biome) and tests (Vitest).
+4. Keep the project Node-first to support AI SDK MCP STDIO transport (`Experimental_StdioMCPTransport`).
 
 ## Hard requirements
 
-- Runtime: Bun for CLI execution.
-- Language: TypeScript with `strict: true`.
-- Zod: v4.3.5 pinned.
-- Tests: Vitest configured. Tests must be runnable via a single top-level command.
-- No `any` in TypeScript.
+- Node.js **v24 LTS** runtime (ADR 0001).
+- pnpm workspaces (ADR 0001).
+- TypeScript strict, no `any`.
+- Zod v4.3.5 for any schema validation.
+- Biome for lint + format.
+- Vitest for testing (ADR 0006).
 
-## Repository layout to create
+## Repo layout
 
-Create this structure exactly:
+- `apps/`
+  - `cli/` – bootstrap CLI
+- `packages/`
+  - `mcp/` – MCP platform
+  - `codex/` – Codex backend integrations
+  - `codex-toolloop/` – workflow engine + orchestration
+  - `workflows/` – workflow definitions
+- `docs/`
+  - `adr/` – architecture decisions
+  - `specs/` – system specifications
 
-```text
-codex-toolloop/
-  apps/
-    cli/
-      src/
-        commands/
-        index.ts
-      package.json
-      tsconfig.json
-  packages/
-    codex-toolloop/
-      src/
-        index.ts
-      package.json
-      tsconfig.json
-    mcp/
-      src/
-        index.ts
-      package.json
-      tsconfig.json
-    codex/
-      src/
-        index.ts
-      package.json
-      tsconfig.json
-    workflows/
-      src/
-        index.ts
-      package.json
-      tsconfig.json
-    testkit/
-      src/
-        index.ts
-      package.json
-      tsconfig.json
-  tests/
-    type/
-      hello.test-d.ts
-    unit/
-      hello.test.ts
-  docs/
-    PRD.md
-    ARCHITECTURE.md
-    adr/
-    specs/
-  package.json
-  tsconfig.json
-  vitest.config.ts
-  README.md
-```
+## Required root scripts
 
-## Implementation steps
+Root `package.json` scripts (required):
 
-### Step 1: Root workspace
+- `pnpm dev:cli -- doctor`
+- `pnpm check` → `typecheck` + `lint` + `test`
+- `pnpm build`
+- `pnpm typecheck`
+- `pnpm lint`
+- `pnpm format`
+- `pnpm fix`
 
-- Create root `package.json`:
-  - mark `private: true`
-  - use Bun workspaces for `apps/*` and `packages/*`
-  - add scripts:
-    - `dev:cli` runs the CLI entrypoint with bun
-    - `test` runs Vitest using Node (invoked by Bun)
-    - `lint` (optional for now) can be added later
-    - `typecheck` runs `tsc -p tsconfig.json --noEmit`
+Examples are run via `tsx`:
 
-### Step 2: Root tsconfig
+- `pnpm examples:basic`
+- `pnpm examples:stream`
+- `pnpm examples:structured`
 
-- Create `tsconfig.json` at root with:
-  - `strict: true`
-  - `noUncheckedIndexedAccess: true`
-  - `exactOptionalPropertyTypes: true`
-  - `moduleResolution` appropriate for modern bundlers
-  - `target` modern (ES2022+)
-  - `verbatimModuleSyntax: true`
-  - references or path aliases are allowed but keep simple
+## pnpm v10 build-script allowlist
 
-Each package should have a `tsconfig.json` extending root and setting `outDir` only if needed.
+pnpm v10 blocks dependency lifecycle scripts by default.
 
-### Step 3: Dependencies
+This repo maintains a minimal allowlist in `pnpm-workspace.yaml` (`allowBuilds`) to ensure required build steps (e.g. `esbuild`, `@biomejs/biome`) run during install.
 
-Add these dependencies at root (or in packages where appropriate):
+If install fails with ignored build scripts, update the allowlist and commit the change.
 
-- `zod@4.3.5`
-- `vitest`
-- `typescript`
+## Bootstrap CLI: `codex-toolloop doctor`
 
-Keep later AI dependencies out of this spec unless needed by the skeleton.
+The bootstrap CLI must:
 
-### Step 4: Vitest setup
-
-- Create `vitest.config.ts` at root:
-  - Include `tests/unit/**/*.test.ts`
-  - Enable `typecheck` tests:
-    - include `tests/type/**/*.test-d.ts`
-- Add `tests/unit/hello.test.ts`:
-  - basic assertion
-- Add `tests/type/hello.test-d.ts`:
-  - use `expectTypeOf` to validate a simple type
-
-### Step 5: CLI skeleton
-
-- `apps/cli/src/index.ts` is the CLI entry:
-  - parse args minimally (do not add heavy CLI framework yet)
-  - implement `codex-toolloop doctor` command only:
-    - check presence of `bun`, `node`, and `codex` binaries by attempting to spawn `--version`
-    - print a clear pass/fail summary
-    - exit code 0 if ok, non-zero if missing required binaries
-- No external dependencies required; use Bun’s spawn APIs.
-
-### Step 6: Package exports
-
-- Each package in `packages/*` should export a single `index.ts` with a placeholder export (real code comes later).
+- exist at `apps/cli/src/index.ts`
+- implement `doctor` as the only command for this phase
+- check presence and basic functionality of:
+  - `node` (must be >= 24)
+  - `pnpm`
+  - `codex`
 
 ## Acceptance criteria
 
-1. `bun run dev:cli -- doctor` works and prints checks.
-2. `bun run test` passes.
-3. `bun run typecheck` passes.
-4. Repository structure matches exactly.
-5. No `any` types.
+1. `pnpm dev:cli -- doctor` works and prints checks.
+2. `pnpm test` passes.
+3. `pnpm typecheck` passes.
+4. `pnpm lint` passes.
 
-## Notes
+## References
 
-- Do not implement Codex integration yet.
-- Keep the scaffolding stable for later specs to build on.
-
-## Deliverables
-
-- All files created above, with correct content and runnable scripts.
+- Node.js release lifecycle (verify v24 LTS): <https://nodejs.org/en/about/previous-releases>
+- pnpm workspaces: <https://pnpm.io/workspaces>
+- pnpm Corepack install: <https://pnpm.io/installation>
+- pnpm supply-chain security defaults: <https://pnpm.io/supply-chain-security>
+- AI SDK MCP stdio transport (`Experimental_StdioMCPTransport`): <https://ai-sdk.dev/docs/reference/ai-sdk-core/mcp-stdio-transport>

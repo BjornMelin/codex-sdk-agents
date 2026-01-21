@@ -93,7 +93,9 @@ Each step should:
   - relevant context pack
   - structured output request (if needed)
 - call the codex backend with:
-  - role-specific mcpServers allowlist
+  - **dynamic tool bundles** resolved for `(workflow, role, step)` (SPEC 011)
+  - a per-step MCP server/bundle allowlist (do not preload all servers)
+  - for large tool catalogs, prefer the MCP meta-tool surface (SPEC 011) instead of injecting all schemas
   - appropriate approvals/sandbox policy
 
 ## Structured outputs for handoffs

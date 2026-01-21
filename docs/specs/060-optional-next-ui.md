@@ -29,7 +29,7 @@ This spec is optional and should only be implemented after the CLI system is sta
 ## Implementation details
 
 - Server Actions:
-  - `startRunAction(formData)` spawns `bun apps/cli/src/index.ts run workflow ...`
+  - `startRunAction(formData)` spawns `pnpm dev:cli -- run workflow ...` (dev)
   - store PID and return runId
 - Streaming is optional; initial version can poll.
 
