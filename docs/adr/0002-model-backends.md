@@ -30,19 +30,19 @@ Codex ToolLoop will implement three backends behind a single `CodexBackend` inte
 
 1. Default: AI SDK Codex App Server provider backend
 
-- For interactive multi-step runs
-- For persistent thread mode
-- For injection and interrupts
+   - For interactive multi-step runs
+   - For persistent thread mode
+   - For injection and interrupts
 
-1. Complement: Exec backend (codex exec)
+2. Complement: Exec backend (codex exec)
 
-- For scripts, CI-like flows, and structured outputs
-- For capturing full JSONL event streams
+   - For scripts, CI-like flows, and structured outputs
+   - For capturing full JSONL event streams
 
-1. Complement: SDK backend (@openai/codex-sdk)
+3. Complement: SDK backend (@openai/codex-sdk)
 
-- For programmatic integrations and experiments
-- For richer control in TS when needed
+   - For programmatic integrations and experiments
+   - For richer control in TS when needed
 
 Codex ToolLoop chooses the backend per workflow:
 
@@ -54,18 +54,18 @@ Codex ToolLoop chooses the backend per workflow:
 
 1. Only app-server backend
 
-- Pros: simplifies architecture
-- Cons: loses the simplicity and composability of exec for scripting
+   - Pros: simplifies architecture
+   - Cons: loses the simplicity and composability of exec for scripting
 
-1. Only exec backend
+2. Only exec backend
 
-- Pros: easy automation
-- Cons: weaker mid-execution correction, harder interactive experiences
+   - Pros: easy automation
+   - Cons: weaker mid-execution correction, harder interactive experiences
 
-1. Only Codex SDK
+3. Only Codex SDK
 
-- Pros: strong programmatic control
-- Cons: less aligned with the AI SDK UI and provider ecosystem, and may have Bun compatibility risks
+   - Pros: strong programmatic control
+   - Cons: less aligned with the AI SDK UI and provider ecosystem, and introduces a parallel API surface to maintain
 
 ## Consequences
 
@@ -88,3 +88,23 @@ Codex ToolLoop chooses the backend per workflow:
 
 - Codex exec supports JSONL events and output schemas.
 - AI SDK Codex App Server provider supports injection and persistent threads.
+
+## Amendments
+
+### 2026-01-21 — Codex backend v1 implemented
+
+This ADR is implemented end-to-end via SPEC 020 (`packages/codex`).
+
+- **Default backend remains app-server** using the AI SDK community provider `ai-sdk-provider-codex-app-server`, which exposes a session API (`injectMessage`, `interrupt`) and per-call options (e.g., `threadMode`, `reasoningEffort`).
+- **Exec backend** uses `codex exec --json` for streaming JSONL events and supports deterministic structured outputs via `--output-schema` + `--output-last-message`.
+- **MCP server configuration** can be passed to Codex both via app-server provider settings and via Codex CLI config overrides (`--config key=value`) for the exec backend.
+
+Notes:
+
+- The app-server provider currently types `reasoningEffort` as `none | low | medium | high`; higher effort values (e.g., `xhigh`) should use the exec backend (or Codex-native config) until provider support expands.
+
+References:
+
+- AI SDK codex app-server provider: <https://ai-sdk.dev/providers/community-providers/codex-app-server#codex-cli-app-server-provider>
+- Codex CLI reference: <https://developers.openai.com/codex/cli/reference/>
+- Codex config reference: <https://developers.openai.com/codex/config>

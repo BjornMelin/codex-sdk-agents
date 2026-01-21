@@ -1,52 +1,37 @@
-# ADR 0006: Vitest standardization with Node execution invoked from Bun
+# ADR 0006: Vitest standardization on Node.js
 
-## Status
-
-Accepted
+Status: **Accepted**
 
 ## Context
 
-Codex ToolLoop requires:
+This repo needs a fast, TypeScript-friendly test runner with strong ESM support.
 
-- modern testing (unit, integration, type tests)
-- stable CI-like behavior locally
-- compatibility with Node-oriented dependencies
+The project is Node.js-first (ADR 0001) and uses:
 
-Vitest is the desired test framework, but Bun support remains inconsistent in practice across versions and modes.
+- TypeScript (`strict: true`)
+- Biome for lint/format
+
+We want:
+
+- deterministic CI-friendly `test` command
+- first-class typecheck in tests (Vitest's type tests)
+- no reliance on runtime-specific built-in test runners
 
 ## Decision
 
-- Use Vitest for:
-  - unit tests
-  - integration tests
-  - type tests (`expectTypeOf`)
-- Execute Vitest using Node, invoked by Bun scripts:
-  - `bun run test` spawns `node` to run the Vitest CLI entrypoint
-- Use Bun for:
-  - building and running the CLI and MCP servers
-  - orchestration scripts
-
-## Alternatives considered
-
-1. Bun test runner
-
-- Pros: tight Bun integration
-- Cons: deviates from requirement and ecosystem expectations for plugin integrations
-
-1. Vitest under Bun directly
-
-- Pros: single runtime
-- Cons: can break in run mode or under certain pools; reliability risk
+- Standardize on **Vitest** as the test runner.
+- Run Vitest directly in Node via pnpm scripts:
+  - `pnpm test` → `vitest run`
+  - `pnpm test:watch` → `vitest`
 
 ## Consequences
 
-- Requires Node installed.
-- Delivers consistent testing behavior and easiest ecosystem compatibility.
+- All tests live under:
+  - `tests/unit/**/*.test.ts`
+  - optionally `src/**/*.test.ts` for package-local tests
+- Type-only tests live under `tests/type/**/*.test-d.ts` and are executed via Vitest's built-in typecheck mode.
 
-## Implementation notes
+## References
 
-- Provide:
-  - `vitest.config.ts`
-  - `tsconfig.json` with strict settings
-  - `tests/` structure and fixtures
-- Integration tests mock Codex and MCP to avoid external side effects.
+- Vitest documentation: <https://vitest.dev/guide/>
+- pnpm workspaces: <https://pnpm.io/workspaces>

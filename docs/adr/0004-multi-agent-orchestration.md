@@ -61,7 +61,7 @@ Codex ToolLoop stores:
 1. External orchestrator framework (LangGraph, etc.)
 
 - Pros: prebuilt graphs
-- Cons: misaligned with Bun-first, and we want minimal abstractions
+- Cons: misaligned with the repo's minimal-abstraction approach, and adds maintenance complexity
 
 ## Consequences
 
