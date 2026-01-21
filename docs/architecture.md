@@ -4,7 +4,7 @@
 
 Codex ToolLoop CLI is a local system composed of:
 
-- A Bun-based CLI runner (apps/cli)
+- A Node.js-based CLI runner (apps/cli)
 - A core runtime package (packages/codex-toolloop)
 - MCP tool platform (packages/mcp)
 - Codex backends (packages/codex)
@@ -15,7 +15,7 @@ ASCII diagram:
 
 ```text
 +------------------------------+
-| apps/cli (Bun)               |
+| apps/cli (Node.js)           |
 |  - command parsing           |
 |  - streaming UX              |
 |  - run directory mgmt        |
@@ -113,18 +113,32 @@ Codex ToolLoop writes JSONL logs for:
 
 ## 4. Tool substrate strategy
 
-All custom tools are MCP tools.
+All tool integrations use **MCP (Model Context Protocol)**.
 
 Why:
 
 - Codex can call MCP servers directly.
-- Codex ToolLoop can discover and call MCP servers directly.
+- Codex ToolLoop can call MCP servers via AI SDK tooling (including `@ai-sdk/mcp`).
 - A single implementation of tools works for both humans and agents.
 
-Default transport:
+### Transport policy
 
-- Streamable HTTP MCP servers.
-- Stdio MCP servers are permitted for local-only development, but not the default.
+- **Default (deployable):** MCP over HTTP (streamable HTTP).
+- **Local-only:** stdio MCP servers are allowed for development but are not deployable, and AI SDK's stdio transport is Node-only.
+
+### Context-bloat control
+
+We do **not** inject all tool definitions into every model call.
+
+- Tools are grouped into small bundles and loaded on-demand (ADR 0009, SPEC 011).
+- For huge tool catalogs, the runtime exposes a small set of MCP meta-tools implemented with AI SDK `dynamicTool()` and fetches schemas on demand.
+
+See:
+
+- ADR 0003: `docs/adr/0003-mcp-tooling.md`
+- ADR 0009: `docs/adr/0009-dynamic-tool-loading.md`
+- SPEC 010: `docs/specs/010-mcp-platform.md`
+- SPEC 011: `docs/specs/011-dynamic-tool-loading.md`
 
 ## 5. Context management strategy
 

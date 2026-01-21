@@ -4,7 +4,7 @@ Product Requirements Document (PRD)
 
 ## 1) Product overview
 
-AI Codex Agents is a local-first, Bun-powered TypeScript system for building and running reusable, autonomous coding-agent workflows using OpenAI Codex (via your existing Codex CLI ChatGPT login) as the primary “engineering model.”
+AI Codex Agents is a local-first, Node.js-powered TypeScript system for building and running reusable, autonomous coding-agent workflows using OpenAI Codex (via your existing Codex CLI ChatGPT login) as the primary “engineering model.”
 
 AI Codex Agents provides:
 
@@ -43,7 +43,8 @@ Secondary persona: “Team engineer / reviewer”
    - Support switching to API-key auth only if you explicitly choose.
 
 3. Provide best-in-class local DX:
-   - Bun runtime for CLI and servers.
+   - Node.js v24 LTS runtime for CLI and servers (required for AI SDK MCP STDIO support).
+   - pnpm workspaces for package management (Corepack-enabled).
    - Type-safe Zod v4.3.5 schemas across tool inputs/outputs and structured outputs.
    - Vitest test setup for unit, integration, and type-level tests.
 
@@ -139,7 +140,7 @@ Output:
 ### FR1: CLI interface
 
 - Commands:
-  - `codex-toolloop doctor` (verify environment: bun, node, codex CLI, auth, MCP connectivity)
+  - `codex-toolloop doctor` (verify environment: node, pnpm, codex CLI, auth, MCP connectivity)
   - `codex-toolloop mcp start` (start first-party MCP servers)
   - `codex-toolloop run spec <path>` (execute a SPEC-driven run)
   - `codex-toolloop run workflow <name>` (execute a named workflow)
@@ -161,14 +162,19 @@ Output:
 ### FR3: Tool substrate via MCP
 
 - Support connecting to:
-  - Local stdio MCP servers (optional, local-only).
   - Local/remote streamable HTTP MCP servers (default path).
-- Dynamic tool discovery:
-  - Enumerate tools and prompts from MCP servers.
-  - Allowlist/denylist tools per workflow and role.
+  - Local stdio MCP servers (optional, local-only; may require Node).
+- AI SDK MCP integration:
+  - Use `createMCPClient()` (`@ai-sdk/mcp`) to connect and convert MCP tools into AI SDK tool sets.
+  - Use `dynamicTool()` for meta-tools and dynamic tool catalogs.
+- Dynamic tool loading (context bloat control):
+  - Group tools into bundles and load on-demand per workflow/role/step.
+  - Avoid injecting all tool schemas into every model call.
+  - Provide a meta-tool surface for huge catalogs (list tools → fetch schema → call tool).
 - Security posture:
   - Never connect to MCP servers unless explicitly configured.
   - Provide a “trust registry” to mark servers as trusted/untrusted.
+  - Enforce allowlist/denylist per workflow and role.
   - Separate “tool discovery” from “tool execution” where possible.
 
 ### FR4: Codex integration modes
@@ -240,12 +246,11 @@ Mode C: Codex Exec (CLI)
 
 ## 9) Risks and mitigations
 
-Risk: Bun compatibility with some Node-focused libraries (Codex SDK, Vitest).
+Risk: Node.js version drift across team machines / CI.
 
 - Mitigation:
-  - Use Bun as the primary runtime.
-  - Execute Vitest via Node while still orchestrating via Bun scripts.
-  - Provide fallback strategy for Codex SDK execution (subprocess Node runner) if needed.
+  - Pin Node.js v24 LTS via `.nvmrc` and `package.json#engines`.
+  - Require `codex-toolloop doctor` to pass before running workflows.
 
 Risk: Tool security (MCP servers can exfiltrate data).
 
@@ -266,7 +271,7 @@ Risk: Overusing Codex context and hitting usage limits.
 
 ### Phase 0: Bootstrap
 
-- Repo scaffolding with Bun workspace, strict TS, Zod v4.3.5.
+- Repo scaffolding with pnpm workspaces, strict TS, Zod v4.3.5.
 - Environment doctor.
 - Minimal MCP server + client manager.
 - Minimal Codex backend (exec mode).

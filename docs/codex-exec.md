@@ -23,4 +23,3 @@ Use `codex exec` when you need:
 - `docs/reference/non-interactive.md`
 - `docs/reference/cli-options.md`
 - `docs/reference/codex-exec.md`
-
