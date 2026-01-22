@@ -171,6 +171,15 @@ export interface CodexBackend {
 
 - Uses `@openai/codex-sdk` `Codex.startThread()` and `thread.runStreamed()` to receive event objects and normalize them.
 - Optional: used only where direct SDK thread control is required.
+- Treats `model` and `reasoningEffort` as **thread-level defaults**:
+  - The backend creates a new SDK thread whenever any thread-level setting changes: `cwd`, `model`, `reasoningEffort`, `sandboxMode`, `approvalMode`,
+    `skipGitRepoCheck`.
+  - This ensures per-run options are actually applied and that returned metadata reflects the model used.
+- SDK reasoning effort support is limited by `@openai/codex-sdk` thread option types:
+  - Supported: `minimal | low | medium | high | xhigh`
+  - Unsupported (throws): `none`
+- SDK file change kinds are normalized:
+  - SDK emits `add | update | delete` which are mapped to `added | modified | deleted` for `codex.file.changed.kind`.
 
 ## Security and safety
 
@@ -213,3 +222,4 @@ export interface CodexBackend {
 - AI SDK codex app-server provider: <https://ai-sdk.dev/providers/community-providers/codex-app-server#codex-cli-app-server-provider>
 - AI SDK MCP tools overview (context on MCP tool wiring): <https://ai-sdk.dev/docs/ai-sdk-core/mcp-tools>
 - Codex SDK (TypeScript) README: <https://github.com/openai/codex/blob/main/sdk/typescript/README.md>
+- SPEC 021: SDK backend option fidelity (v1.1) -- `docs/specs/021-sdk-backend-option-fidelity.md`

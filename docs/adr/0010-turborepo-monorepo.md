@@ -19,6 +19,7 @@ Adopt Turborepo as the primary task orchestrator for the monorepo by:
 - Using Turbo for build and dev orchestration (`turbo build`, `turbo dev`).
 - Using root tasks for Biome and Vitest (`//#lint`, `//#test`) to avoid per-package duplication.
 - Setting the Vercel Build Command to `turbo build`.
+- Including lockfiles/configs in `globalDependencies` to invalidate caches on dependency changes.
 
 ## Consequences
 
@@ -34,4 +35,5 @@ Vercel Next.js cache exclusion rule: https://vercel.com/docs/conformance/rules/N
 Turborepo config reference: https://turborepo.dev/schema.json
 Turborepo configuration (tasks): https://turborepo.dev/docs/reference/configuration
 Turborepo Biome guide: https://turbo.build/repo/docs/guides/tools/biome
+Vercel remote cache signature: https://vercel.com/docs/integrations/ecommerce/bigcommerce
 ```
