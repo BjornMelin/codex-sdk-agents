@@ -362,6 +362,7 @@ export function createThreadEventMapper(
         const isAgentMessage =
           item.type === "agent_message" || item.type === "assistant_message";
         if (isAgentMessage) {
+          const itemId = item.id ?? "__agent__";
           const text = item.text ?? lastAgentText;
           lastAgentText = text;
 
@@ -378,6 +379,7 @@ export function createThreadEventMapper(
             text,
           };
           events.push(e);
+          itemTextById.delete(itemId);
           break;
         }
 
@@ -452,6 +454,10 @@ export function createThreadEventMapper(
           ...(result !== undefined ? { result } : {}),
         };
         events.push(toolDone);
+        if (itemId) {
+          toolStartTsByItemId.delete(itemId);
+          itemTextById.delete(itemId);
+        }
         break;
       }
 

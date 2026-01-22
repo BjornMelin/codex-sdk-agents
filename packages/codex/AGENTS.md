@@ -34,5 +34,6 @@ Run commands from the repo root unless noted.
 
 ## Environment & Tooling
 
-- Package manager: `pnpm@10.28.1` (see root `package.json`).
-- Node.js: `>=24.0.0`.
+- Package manager: see root `package.json` `packageManager` field.
+- Node.js: see root `.nvmrc` (Node.js v24 LTS).
+- Authoritative runtime guidance: `docs/adr/0001-runtime-node-pnpm.md`.

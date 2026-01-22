@@ -77,4 +77,23 @@ describe("runDoctor", () => {
 
     log.mockRestore();
   });
+
+  it("returns 1 when node version is below 24", async () => {
+    const { spawnSync } = await import("node:child_process");
+    const spawnSyncMock = vi.mocked(spawnSync);
+
+    spawnSyncMock.mockImplementation((command) => {
+      if (command === "node") {
+        return okResult("v20.0.0");
+      }
+      return okResult(`${command} 1.0.0`);
+    });
+
+    const { runDoctor } = await import(doctorCmdPath);
+    const log = vi.spyOn(console, "log").mockImplementation(() => undefined);
+
+    expect(runDoctor()).toBe(1);
+
+    log.mockRestore();
+  });
 });

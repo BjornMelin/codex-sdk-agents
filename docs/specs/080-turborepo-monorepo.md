@@ -60,7 +60,7 @@ Baseline configuration:
     },
     "//#lint": { "outputs": [] },
     "//#fix": { "cache": false },
-    "//#test": { "outputs": ["coverage/**"] },
+    "//#test": { "cache": false, "outputs": ["coverage/**"] },
     "//#typecheck": { "outputs": [] }
   }
 }

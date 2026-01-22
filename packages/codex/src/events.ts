@@ -117,7 +117,7 @@ export type CodexExecStderrEvent = CodexEventBase & {
 export type CodexErrorEvent = CodexEventBase & {
   type: "codex.error";
   message: string;
-  details?: JsonObject;
+  details?: JsonObject | undefined;
 };
 
 /** Normalized event union emitted across Codex backends. */

@@ -171,7 +171,7 @@ export class McpClientManager {
 
     const now = Date.now();
     const cached = entry.toolsCache;
-    if (cached && cached.expiresAt > now) {
+    if (!options && cached && cached.expiresAt > now) {
       return cached.tools;
     }
 

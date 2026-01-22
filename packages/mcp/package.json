@@ -5,10 +5,12 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "tsc -p tsconfig.json"
+    "build": "tsc -p tsconfig.json",
+    "lint": "pnpm -s -C ../.. lint",
+    "test": "pnpm -s -C ../.. test"
   },
   "dependencies": {
-    "@ai-sdk/mcp": "1.0.11",
+    "@ai-sdk/mcp": "^1.0.11",
     "ai": "^6.0.48",
     "zod": "^4.3.6"
   }

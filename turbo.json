@@ -21,6 +21,7 @@
       "interactive": true
     },
     "//#lint": {
+      "cache": false,
       "outputs": []
     },
     "//#fix": {
@@ -31,6 +32,7 @@
       "outputs": ["coverage/**"]
     },
     "//#typecheck": {
+      "cache": false,
       "outputs": []
     }
   }

@@ -98,6 +98,8 @@ Repo identity:
 
 Define schemas:
 
+All memory item types are mutable and include `updatedAt` for last-modified tracking.
+
 - Convention:
   - id: `string` (unique identifier, e.g., UUID)
   - title: `string` (brief convention name)

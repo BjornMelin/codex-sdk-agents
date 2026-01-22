@@ -12,5 +12,8 @@
     "ai": "^6.0.48",
     "ai-sdk-provider-codex-app-server": "^1.1.7",
     "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
   }
 }
