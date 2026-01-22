@@ -18,14 +18,18 @@ import {
 } from "./exec-events.js";
 
 type CodexClientConfig = ConstructorParameters<typeof Codex>[0];
+type CodexClient = Pick<Codex, "startThread">;
 
 /**
  * Configuration for the Codex SDK backend.
+ *
+ * Provide `codexClient` to inject a preconfigured client (useful for tests).
  *
  * @see docs/specs/020-codex-backends.md
  */
 export type SdkBackendConfig = CodexClientConfig & {
   defaultModel?: string;
+  codexClient?: CodexClient;
 };
 
 /**
@@ -37,16 +41,16 @@ export type SdkBackendConfig = CodexClientConfig & {
 export class SdkBackend implements CodexBackend {
   public readonly kind = "sdk" as const;
 
-  private readonly codex: Codex;
+  private readonly codex: CodexClient;
   private readonly defaultModel: string;
 
   private thread: ReturnType<Codex["startThread"]> | null = null;
   private threadConfigKey: string | null = null;
 
   public constructor(config: SdkBackendConfig = {}) {
-    const { defaultModel, ...clientConfig } = config;
+    const { defaultModel, codexClient, ...clientConfig } = config;
     this.defaultModel = defaultModel ?? DEFAULT_CODEX_MODEL;
-    this.codex = new Codex(clientConfig);
+    this.codex = codexClient ?? new Codex(clientConfig);
   }
 
   public async run(

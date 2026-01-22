@@ -132,9 +132,14 @@ Existing values MUST be preserved:
 Add unit tests to prevent regressions:
 
 - `tests/unit/codex-sdk-backend.test.ts`
-  - Mocks `@openai/codex-sdk` to assert `startThread()` receives `model` and `modelReasoningEffort`.
+  - Injects a stub `codexClient` to assert `startThread()` receives `model` and `modelReasoningEffort`.
   - Verifies that changing any thread-level setting causes a new thread to be created.
   - Verifies that unsupported reasoning effort values throw a `CodexBackendError`.
+- `tests/unit/codex-sdk-backend.integration.test.ts` (optional)
+  - **Env-gated**: set `CODEX_SDK_INTEGRATION=1` to enable.
+  - Uses the real Codex CLI via the SDK; requires Codex CLI login.
+  - Optional model override: set `CODEX_SDK_INTEGRATION_MODEL` to a supported model name.
+  - Example: `CODEX_SDK_INTEGRATION=1 CODEX_SDK_INTEGRATION_MODEL=gpt-5-codex pnpm test -- tests/unit/codex-sdk-backend.integration.test.ts`
 
 - `tests/unit/codex-exec-events.test.ts`
   - Verifies `normalizeFileChangeKind` maps `add|update|delete` correctly.

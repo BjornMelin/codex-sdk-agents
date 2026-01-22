@@ -2,16 +2,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const startThread = vi.fn();
 
-vi.mock("@openai/codex-sdk", () => {
-  class Codex {
-    public startThread(options: unknown) {
-      return startThread(options);
-    }
-  }
-
-  return { Codex };
-});
-
 function makeSingleAgentMessageEventStream(params: {
   threadId: string;
   turnId: string;
@@ -46,7 +36,10 @@ describe("SdkBackend", () => {
     });
 
     const { SdkBackend } = await import("../../packages/codex/src/index.js");
-    const backend = new SdkBackend({ defaultModel: "default-model" });
+    const backend = new SdkBackend({
+      defaultModel: "default-model",
+      codexClient: { startThread },
+    });
 
     const result = await backend.run("prompt", {
       cwd: "/tmp",
@@ -96,7 +89,10 @@ describe("SdkBackend", () => {
     });
 
     const { SdkBackend } = await import("../../packages/codex/src/index.js");
-    const backend = new SdkBackend({ defaultModel: "default-model" });
+    const backend = new SdkBackend({
+      defaultModel: "default-model",
+      codexClient: { startThread },
+    });
 
     await backend.run("prompt", { cwd: "/tmp", model: "m1" });
     await backend.run("prompt", { cwd: "/tmp", model: "m1" });
@@ -115,7 +111,10 @@ describe("SdkBackend", () => {
 
   it("rejects unsupported reasoningEffort values", async () => {
     const { SdkBackend } = await import("../../packages/codex/src/index.js");
-    const backend = new SdkBackend({ defaultModel: "default-model" });
+    const backend = new SdkBackend({
+      defaultModel: "default-model",
+      codexClient: { startThread },
+    });
 
     await expect(
       backend.run("prompt", { cwd: "/tmp", reasoningEffort: "none" }),

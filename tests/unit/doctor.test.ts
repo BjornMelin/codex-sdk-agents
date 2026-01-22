@@ -1,5 +1,5 @@
 import type { SpawnSyncReturns } from "node:child_process";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const doctorCmdPath = "../../apps/cli/src/commands/doctor.js";
 
@@ -31,9 +31,17 @@ function missingResult(message: string): SpawnSyncReturns<string> {
 }
 
 describe("runDoctor", () => {
+  let logSpy: ReturnType<typeof vi.spyOn> | null = null;
+
   beforeEach(() => {
     vi.resetModules();
     vi.clearAllMocks();
+    logSpy = vi.spyOn(console, "log").mockImplementation(() => undefined);
+  });
+
+  afterEach(() => {
+    logSpy?.mockRestore();
+    logSpy = null;
   });
 
   it("returns 0 when all required binaries are present", async () => {
@@ -48,12 +56,9 @@ describe("runDoctor", () => {
     });
 
     const { runDoctor } = await import(doctorCmdPath);
-    const log = vi.spyOn(console, "log").mockImplementation(() => undefined);
 
     expect(runDoctor()).toBe(0);
     expect(spawnSyncMock).toHaveBeenCalledTimes(3);
-
-    log.mockRestore();
   });
 
   it("returns 1 when codex is missing", async () => {
@@ -71,11 +76,8 @@ describe("runDoctor", () => {
     });
 
     const { runDoctor } = await import(doctorCmdPath);
-    const log = vi.spyOn(console, "log").mockImplementation(() => undefined);
 
     expect(runDoctor()).toBe(1);
-
-    log.mockRestore();
   });
 
   it("returns 1 when node version is below 24", async () => {
@@ -90,10 +92,7 @@ describe("runDoctor", () => {
     });
 
     const { runDoctor } = await import(doctorCmdPath);
-    const log = vi.spyOn(console, "log").mockImplementation(() => undefined);
 
     expect(runDoctor()).toBe(1);
-
-    log.mockRestore();
   });
 });
