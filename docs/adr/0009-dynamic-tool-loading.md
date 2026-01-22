@@ -84,11 +84,47 @@ For MCP servers that expose a large number of tools (or untrusted, fast-changing
 
 This keeps the **tool list in the prompt tiny**, while still allowing access to the full ecosystem through a discovery + execute loop.
 
+**Media result handling:** `mcp.callTool` results may include non-text media (images, audio, binary files) that, if serialized as base64 JSON blobs, inflate token usage and degrade model performance. To mitigate this:
+
+- Wrap all `mcp.callTool` invocations with a media-conversion layer (e.g., using community utilities like `fixMCPTools` that leverage `toModelOutput`).
+- Detect binary/image/audio results and convert them to proper AI SDK multimodal content types (`image-data`, `file-data`, etc.) instead of inline base64.
+- Return lightweight references (URIs, artifact paths, or metadata objects with MIME type and SHA-256 hash) instead of full base64 payloads.
+- Implement the converter at the `dynamicTool()` boundary so all MCP tool calls are normalized in one place.
+- Record all converted outputs to observability logs: append converted metadata, artifact URIs, and hashes to `tool-calls.jsonl` (per ADR 0007) to preserve debugging and traceability until the upstream AI SDK media-serialization bug is fixed.
+
+### 4.1 MCP transport choices
+
+The MCP transport choice directly affects CPU usage, latency, connection pooling, and observability. Transport selection must be explicit in `createMCPClient()` configuration.
+
+#### Recommended default: HTTP/Streamable HTTP
+
+- Use HTTP or Streamable HTTP as the default transport for all production deployments.
+- Benefits: low CPU overhead, supports both local and remote MCP servers, superior connection lifecycle management, graceful error recovery.
+- Suitable for all deployment contexts (local, containerized, cloud).
+
+#### Stdio (local development only)
+
+- Stdio transport is acceptable for local development workflows only.
+- **Production prohibition:** do not use stdio in production. Stdio spawns a child process for each `createMCPClient()` call and requires manual process cleanup; it does not support remote servers and increases resource overhead.
+
+#### SSE (legacy, not recommended)
+
+- Server-Sent Events (SSE) is a legacy transport and is inefficient for production use.
+- Drawback: maintains persistent connections indefinitely, preventing connection reuse and increasing memory footprint.
+
+#### Transport implications for caching, connection pooling, and cleanup
+
+The choice of transport affects:
+
+- **Connection pooling:** HTTP/Streamable HTTP enable connection reuse; stdio does not support pooling.
+- **Cache TTLs:** Schema and tool-list caches (per ADR 0009 § 5) have shorter TTLs for stdio (local servers may restart without notice) and longer TTLs for HTTP (stable remote endpoints).
+- **Client lifecycle:** Always close MCP clients when a run ends. For HTTP, this releases connection handles; for stdio, this terminates the spawned process. Connection cleanup is critical to prevent resource exhaustion on long-running CI systems.
+
 ### 5. Caching
 
-- Cache tool lists and schemas per server (TTL-based)
-- Cache tool bundle resolution for a run
-- Always close MCP clients when a run ends
+- Cache tool lists and schemas per server (TTL-based; see § 4.1 for transport-dependent TTL guidance).
+- Cache tool bundle resolution for a run.
+- Always close MCP clients when a run ends (critical for resource cleanup: HTTP connections are released, stdio processes are terminated).
 
 ### 6. Stability for production: vendored wrappers
 

@@ -14,6 +14,10 @@ To provide **first-class MCP STDIO support**, the system must support the AI SDK
 `Experimental_StdioMCPTransport`. The official API reference describes this as a Node.js STDIO transport
 for MCP servers (spawns a child process and communicates over stdin/stdout). (See: <https://ai-sdk.dev/docs/reference/ai-sdk-core/mcp-stdio-transport>.)
 
+**Note:** There is a known limitation with MCP STDIO where tool results containing non-text media (images, audio)
+may be serialized as JSON/text instead of converted to AI SDK multimodal types. This can cause large base64
+strings to inflate token usage. For production systems handling media, prefer HTTP/SSE transports (see ADR 0003).
+
 Because STDIO MCP requires Node's process APIs, the repo standardizes on:
 
 - **Node.js v24 LTS** for runtime compatibility and long-term support.
@@ -29,6 +33,12 @@ Node 24 is in Active LTS (through October 2026) — see the Node.js release sche
 3. **Workspace definition:** `pnpm-workspace.yaml` defines the monorepo packages.
 4. **Supply-chain default (pnpm v10):** dependency lifecycle scripts are blocked by default; we maintain a
    minimal allowlist using `allowBuilds` in `pnpm-workspace.yaml`.
+
+   **Operational note:** pnpm v10's default block on dependency lifecycle scripts can cause CI and local
+   install failures until an explicit allowlist is configured. To restore builds and installs, add required
+   packages or scripts to the `allowBuilds` key in `pnpm-workspace.yaml` (or configure it in your CI runner).
+   When troubleshooting install/build failures, check pnpm docs or CI logs for entries indicating blocked
+   lifecycle script execution.
 
 ## Consequences
 

@@ -7,9 +7,9 @@ This SPEC defines the **MCP substrate** used by Codex ToolLoop:
 - a validated, multi-source MCP configuration format (file + env + runtime overrides)
 - MCP client lifecycle management (lazy connect, caching, deterministic cleanup)
 - transport support for:
-  - **STDIO** (local, Node-only) via AI SDK `Experimental_StdioMCPTransport`
-  - **HTTP** (Streamable HTTP servers) via AI SDK `createMCPClient`
-  - **SSE compatibility** via AI SDK transport config for legacy MCP servers
+  - **STDIO** (experimental, local development only, Node-only) via AI SDK `Experimental_StdioMCPTransport` — **not production-ready**
+  - **HTTP** (production-ready, Streamable HTTP servers) via AI SDK `createMCPClient`
+  - **SSE** (production-ready, legacy compatibility) via AI SDK transport config for legacy MCP servers
 
 > First-party MCP server implementations (repo tools, shell, editor, etc.) are explicitly **out of scope** for SPEC 010.
 > SPEC 010 is only the platform substrate that can connect to those servers.
@@ -149,6 +149,18 @@ This keeps interactive flows and secrets out of static config files while remain
 - STDIO servers are local-only and must be configured explicitly.
 - Networked servers must be configured with explicit URLs and optional headers.
 - Tool definitions and tool outputs from **untrusted** servers must be treated as hostile input (enforced via SPEC 011).
+
+### Known limitations
+
+**Media serialization in MCP tool results:**
+
+MCP tool results carrying non-text media (images, audio, binary files) may be serialized as JSON/plain text (e.g., large base64 blobs) rather than converted into AI SDK multimodal message types. This can significantly inflate token/context usage and degrade model performance.
+
+**Mitigation:**
+
+- Implementers should explicitly convert non-text media to AI SDK multimodal content types (`image-data`, `file-data`, etc.) or use lightweight references (URLs, artifact paths).
+- Reference tool outputs and untrusted input handling in SPEC 011.
+- Media conversion is recommended at the tool boundary (e.g., in `dynamicTool()` wrappers) to normalize results before consumption.
 
 ## Implementation
 
