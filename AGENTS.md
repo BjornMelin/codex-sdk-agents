@@ -82,8 +82,9 @@ Rules:
   - For AI/RAG code (paths `/agents/` `/rag/` `/mcp/` `/codex/` or AI/RAG
     imports), each exported function/class also needs `@see` (ADR/SPEC path or
     official docs URL) or `@remarks` containing `ADR-` or `SPEC-`.
-  - Tooling: run `pnpm lint:tsdoc` (ESLint with TSDoc/JSDoc rules) for syntax
-    and tag ordering; AI/RAG `@see`/`@remarks` checks remain manual.
+  - Tooling: run `pnpm lint:docs` (ESLint with TSDoc/JSDoc rules via
+    `eslint.config.js`) for syntax and tag ordering; AI/RAG `@see`/`@remarks`
+    checks remain manual.
 - **Characters**:
   - Do not introduce Unicode em dash U+2014; use `--`.
   - Detect with `rg -n --pcre2 "\\x{2014}" .`.

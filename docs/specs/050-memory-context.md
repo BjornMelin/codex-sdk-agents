@@ -44,8 +44,16 @@ Under `~/.codex-toolloop/repos/<repoHash>/` store:
 Repo identity:
 
 - compute stable `repoHash`:
-  - hash of canonical workspace path + git remote URL (if present) + current branch name
-  - if remote not present, path-only hash
+  - hash of canonical workspace path + sanitized git remote URL (if present) + current branch name
+  - **Remote URL sanitization (required to prevent credential leaks):**
+    - Strip userinfo credentials: remove `username[:password]@` prefix
+    - Remove default ports (e.g., `:22` for SSH, `:443` for HTTPS)
+    - Remove trailing slashes
+    - Normalize scheme to lowercase (e.g., `https://` not `HTTPS://`)
+    - Remove query parameters and fragments
+    - Example: `https://user:token@github.com:443/owner/repo/?foo=bar#section` → `https://github.com/owner/repo`
+  - Hash the canonical path + sanitized remote URL + current branch name
+  - if remote not present, hash canonical path + current branch name only
 
 **Branch-scoping and edge case handling:**
 
@@ -68,25 +76,25 @@ Repo identity:
 Define schemas:
 
 - Convention:
-  - id
-  - title
-  - content
-  - tags
-  - createdAt
-  - updatedAt
+  - id: `string` (unique identifier, e.g., UUID)
+  - title: `string` (brief convention name)
+  - content: `string` (full convention documentation)
+  - tags: `string[]` (category tags, e.g., ["style", "architecture"])
+  - createdAt: `string` (ISO-8601 timestamp, e.g., "2025-01-22T10:30:00Z")
+  - updatedAt: `string` (ISO-8601 timestamp, e.g., "2025-01-22T10:30:00Z")
 
 - Decision:
-  - id
-  - summary
-  - rationale
-  - impactedPaths
-  - createdAt
+  - id: `string` (unique identifier, e.g., UUID)
+  - summary: `string` (one-line decision summary)
+  - rationale: `string` (full explanation and reasoning)
+  - impactedPaths: `string[]` (file/directory paths affected, e.g., ["src/", "docs/"])
+  - createdAt: `string` (ISO-8601 timestamp, e.g., "2025-01-22T10:30:00Z")
 
 - Note:
-  - id
-  - content
-  - source (manual|agent|tool)
-  - createdAt
+  - id: `string` (unique identifier, e.g., UUID)
+  - content: `string` (note text)
+  - source: `"manual" | "agent" | "tool"` (origin of the note)
+  - createdAt: `string` (ISO-8601 timestamp, e.g., "2025-01-22T10:30:00Z")
 
 Expose APIs:
 

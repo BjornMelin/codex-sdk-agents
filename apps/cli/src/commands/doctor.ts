@@ -77,9 +77,9 @@ function parseNodeMajor(versionOutput: string): number | null {
  * Validates that required tools (Node.js, pnpm, codex) are installed and
  * meet version requirements.
  *
- * @returns Exit code (0 for success, 1 for failure).
  * @remarks
  * Requirements defined in bootstrap phase (SPEC 000).
+ * @returns Exit code (0 for success, 1 for failure).
  */
 export function runDoctor(): number {
   const checks: readonly Check[] = [

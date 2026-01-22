@@ -77,11 +77,11 @@ If this repo adds a Next.js app, append:
 
 ### 4.2 Root Scripts (Required)
 
-Update root `package.json` scripts to align with Turbo + Biome + Vitest:
+Update root `package.json` scripts to align with Turbo + Biome + ESLint docs lint + Vitest:
 
 - `build`: `turbo build`
 - `dev`: `turbo dev`
-- `lint`: `biome check .`
+- `lint`: `pnpm -s lint` (Biome + ESLint docs lint)
 - `test`: `vitest run`
 
 ### 4.3 Turbo Dependency (Recommended)

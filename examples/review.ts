@@ -47,12 +47,17 @@ process.stdout.write(`${JSON.stringify(validated, null, 2)}\n`);
  * @throws Error if the text is not valid JSON.
  */
 function safeJsonParse(text: string): unknown {
+  const MAX_RAW_PREVIEW = 1000;
   try {
     return JSON.parse(text);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
+    const preview =
+      text.length > MAX_RAW_PREVIEW
+        ? `${text.slice(0, MAX_RAW_PREVIEW)}… [truncated ${text.length - MAX_RAW_PREVIEW} chars]`
+        : text;
     throw new Error(
-      `Codex response was not valid JSON: ${message}\n\nRaw:\n${text}`,
+      `Codex response was not valid JSON: ${message}\n\nRaw (${text.length} chars):\n${preview}`,
     );
   }
 }

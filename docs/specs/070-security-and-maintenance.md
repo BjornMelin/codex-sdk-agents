@@ -24,7 +24,7 @@ We utilize the **dependabot-pnpm** grouping strategy to balance velocity and fre
     1. `dev-dependencies`: All `development` dependencies grouped together.
         - *Rationale*: Low risk, high volume. Block only on build failure.
     2. `production-dependencies`: Production dependencies, updates `patch` and `minor`.
-        - *Rationale*: Safe to group for semantic versioning compliant packages.
+        - *Rationale*: Safe to group for semantic-versioning-compliant packages.
 - **Commit Message**: Prefix with `chore(deps)` for production updates and `chore(deps-dev)` for development updates (conventional commits compliance).
 - **Insecure Dependencies**: Immediately raise PRs for known vulnerabilities (ignoring schedule).
 
@@ -81,10 +81,10 @@ We implement the **OpenSSF Scorecard** action to assess the repository's securit
 
 ## 6. Code Quality & Linting (`.github/workflows/ci.yml`)
 
-A unified CI workflow enforces Biome and TypeScript standards.
+A unified CI workflow enforces Biome, ESLint docs linting, and TypeScript standards.
 
 - **Jobs**:
-  - `lint`: `pnpm biome ci .` (Errors on warnings, ensures formatting).
+  - `lint`: `pnpm lint` (Biome + ESLint docs rules).
   - `typecheck`: `pnpm typecheck` (Strict TypeScript 5.x).
   - `test`: `pnpm test` (Ensures no regression).
 - **Policy**: Passing CI is mandatory for all PRs.
@@ -104,7 +104,7 @@ A unified CI workflow enforces Biome and TypeScript standards.
 | **Vulnerability Scanning** | CodeQL Extended + Dependabot Alerts | **+3.0** |
 | **Update Velocity** | Weekly Grouped Updates (pnpm optimized) | **+2.0** |
 | **Supply Chain** | Scorecard + Dependency Review | **+2.0** |
-| **Code Hygiene** | Biome Strict + TypeScript | **+1.5** |
+| **Code Hygiene** | Biome Strict + ESLint Docs + TypeScript | **+1.5** |
 | **Repo Security** | Least Privilege Token + Branch Protection | **+1.0** |
 | **Total** | **9.5/10** | **Pass** |
 

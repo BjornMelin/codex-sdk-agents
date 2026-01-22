@@ -29,7 +29,7 @@ export type SdkBackendConfig = CodexClientConfig & {
 };
 
 /**
- * SDK-backed Codex runner using @openai/codex-sdk threads.
+ * SDK-backed Codex runner using the OpenAI Codex SDK threads.
  *
  * @see docs/specs/020-codex-backends.md
  * @see docs/specs/021-sdk-backend-option-fidelity.md

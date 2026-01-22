@@ -6,9 +6,10 @@
     "pnpm-workspace.yaml",
     "tsconfig.json",
     "biome.json",
-    ".env*"
+    "eslint.config.js",
+    ".env.example"
   ],
-  "globalEnv": ["NODE_ENV", "VERCEL_ENV"],
+  "globalEnv": ["NODE_ENV", "VERCEL_ENV", "CI"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],

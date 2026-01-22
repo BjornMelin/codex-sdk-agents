@@ -11,7 +11,7 @@ export type CreateCodexFromEnvOptions = {
 
 /**
  * Creates a Codex instance from environment variables.
- * @param options Options to customize the Codex instance.
+ * @param options - Options to customize the Codex instance.
  * @returns A Codex instance.
  * @see docs/specs/020-codex-backends.md
  */
