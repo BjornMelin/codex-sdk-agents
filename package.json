@@ -15,7 +15,8 @@
   "scripts": {
     "dev:cli": "tsx apps/cli/src/index.ts",
     "check": "pnpm -s typecheck && pnpm -s lint && pnpm -s test",
-    "build": "tsc -p tsconfig.json",
+    "build": "turbo build",
+    "dev": "turbo dev",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "biome check .",
     "format": "biome format --write .",
@@ -36,6 +37,7 @@
   "devDependencies": {
     "@biomejs/biome": "^2.3.11",
     "@types/node": "~24.10.9",
+    "turbo": "^2.7.5",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "vitest": "^4.0.17"

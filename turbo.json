@@ -1,0 +1,28 @@
+{
+  "$schema": "https://turborepo.dev/schema.json",
+  "globalDependencies": ["tsconfig.json", "biome.json", ".env*"],
+  "globalEnv": ["NODE_ENV", "VERCEL_ENV"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true,
+      "interactive": true
+    },
+    "//#lint": {
+      "outputs": []
+    },
+    "//#fix": {
+      "cache": false
+    },
+    "//#test": {
+      "outputs": ["coverage/**"]
+    },
+    "//#typecheck": {
+      "outputs": []
+    }
+  }
+}

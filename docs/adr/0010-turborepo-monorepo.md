@@ -2,7 +2,7 @@
 adr: ADR-0010
 title: Standardize Turborepo configuration for the monorepo
 spec: SPEC-080
-status: Accepted (2026-01-22)
+status: Implemented (2026-01-22)
 ---
 
 ## Context
@@ -15,9 +15,9 @@ Vercel recommends running `turbo build` for Turborepo-based monorepos and requir
 
 Adopt Turborepo as the primary task orchestrator for the monorepo by:
 
-- Adding a root `turbo.json` with explicit `pipeline.build.outputs` and env hashing.
-- Standardizing root scripts to use Turbo (`turbo build`, `turbo test`, `turbo lint`, `turbo dev`).
-- Aligning workspace package scripts with Turbo pipeline tasks.
+- Adding a root `turbo.json` with explicit `tasks.build.outputs` and env hashing.
+- Using Turbo for build and dev orchestration (`turbo build`, `turbo dev`).
+- Using root tasks for Biome and Vitest (`//#lint`, `//#test`) to avoid per-package duplication.
 - Setting the Vercel Build Command to `turbo build`.
 
 ## Consequences
@@ -32,4 +32,6 @@ Adopt Turborepo as the primary task orchestrator for the monorepo by:
 Vercel Turborepo monorepos: https://vercel.com/docs/monorepos/turborepo
 Vercel Next.js cache exclusion rule: https://vercel.com/docs/conformance/rules/NEXTJS_NO_TURBO_CACHE
 Turborepo config reference: https://turborepo.dev/schema.json
+Turborepo configuration (tasks): https://turborepo.dev/docs/reference/configuration
+Turborepo Biome guide: https://turbo.build/repo/docs/guides/tools/biome
 ```
