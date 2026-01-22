@@ -13,6 +13,13 @@
     "verbatimModuleSyntax": true,
     "outDir": "dist"
   },
-  "include": ["apps", "packages", "src", "tests", "examples", "vitest.config.ts"],
+  "include": [
+    "apps",
+    "packages",
+    "src",
+    "tests",
+    "examples",
+    "vitest.config.ts"
+  ],
   "exclude": ["opensrc"]
 }

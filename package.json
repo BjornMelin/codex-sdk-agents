@@ -20,6 +20,7 @@
     "lint": "biome check .",
     "format": "biome format --write .",
     "fix": "biome format --write . && biome check --fix .",
+    "fix:typecheck": "pnpm -s fix && pnpm -s typecheck && pnpm -s test",
     "test": "vitest run",
     "test:watch": "vitest",
     "examples:basic": "tsx examples/basic.ts",
