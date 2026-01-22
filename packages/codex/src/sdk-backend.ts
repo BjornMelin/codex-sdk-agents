@@ -15,10 +15,21 @@ import {
 
 type CodexClientConfig = ConstructorParameters<typeof Codex>[0];
 
+/**
+ * Configuration for the Codex SDK backend.
+ *
+ * @see docs/specs/020-codex-backends.md
+ */
 export type SdkBackendConfig = CodexClientConfig & {
   defaultModel?: string;
 };
 
+/**
+ * SDK-backed Codex runner using @openai/codex-sdk threads.
+ *
+ * @see docs/specs/020-codex-backends.md
+ * @see docs/specs/021-sdk-backend-option-fidelity.md
+ */
 export class SdkBackend implements CodexBackend {
   public readonly kind = "sdk" as const;
 

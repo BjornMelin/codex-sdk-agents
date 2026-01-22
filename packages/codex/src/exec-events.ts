@@ -18,12 +18,14 @@ import type {
 import type { JsonObject } from "./types.js";
 import { isJsonObject } from "./types.js";
 
+/** Schema for token usage reported by backends. */
 const UsageSchema = z.looseObject({
   input_tokens: z.number().optional(),
   output_tokens: z.number().optional(),
   cached_input_tokens: z.number().optional(),
 });
 
+/** Schema for individual timeline items in thread events. */
 const ItemSchema = z.looseObject({
   id: z.string().optional(),
   type: z.string().optional(),
@@ -43,6 +45,7 @@ const ItemSchema = z.looseObject({
     .optional(),
 });
 
+/** Schema for raw thread events from exec or SDK streams. */
 const ThreadEventSchema = z.looseObject({
   type: z.string(),
   thread_id: z.string().optional(),
@@ -53,8 +56,20 @@ const ThreadEventSchema = z.looseObject({
   message: z.string().optional(),
 });
 
+/**
+ * Parsed thread event shape used by exec and SDK backends.
+ *
+ * @see docs/specs/020-codex-backends.md
+ */
 export type ThreadEventLike = z.infer<typeof ThreadEventSchema>;
 
+/**
+ * Validate raw event payloads from exec or SDK streams.
+ *
+ * @param value - Raw event payload.
+ * @returns Parsed event or null when invalid.
+ * @see docs/specs/020-codex-backends.md
+ */
 export function parseThreadEventLike(value: unknown): ThreadEventLike | null {
   const parsed = ThreadEventSchema.safeParse(value);
   if (!parsed.success) {
@@ -63,10 +78,17 @@ export function parseThreadEventLike(value: unknown): ThreadEventLike | null {
   return parsed.data;
 }
 
+/** Current timestamp in milliseconds. */
 function nowMs(): number {
   return Date.now();
 }
 
+/**
+ * Map thread event usage to normalized Codex usage.
+ *
+ * @param usage - Raw usage from thread event.
+ * @returns Normalized usage or undefined.
+ */
 function toUsage(usage: ThreadEventLike["usage"]): CodexUsage | undefined {
   if (!usage) {
     return undefined;
@@ -78,6 +100,12 @@ function toUsage(usage: ThreadEventLike["usage"]): CodexUsage | undefined {
   };
 }
 
+/**
+ * Cast value to JsonObject if applicable.
+ *
+ * @param value - Candidate value.
+ * @returns JsonObject or undefined.
+ */
 function toJsonObject(value: unknown): JsonObject | undefined {
   if (isJsonObject(value)) {
     return value;
@@ -85,6 +113,12 @@ function toJsonObject(value: unknown): JsonObject | undefined {
   return undefined;
 }
 
+/**
+ * Extract error message from unknown error value.
+ *
+ * @param value - Error value.
+ * @returns Error message string or undefined.
+ */
 function toErrorMessage(value: unknown): string | undefined {
   if (typeof value === "string") {
     return value;
@@ -96,8 +130,15 @@ function toErrorMessage(value: unknown): string | undefined {
   return undefined;
 }
 
+/** Normalized file change types. */
 type FileChangeKind = CodexFileChangedEvent["kind"];
 
+/**
+ * Normalize file change kind strings from Codex.
+ *
+ * @param kind - Raw change kind.
+ * @returns Normalized file change kind.
+ */
 function normalizeFileChangeKind(kind: string | undefined): FileChangeKind {
   switch (kind) {
     case "add":
@@ -116,10 +157,22 @@ function normalizeFileChangeKind(kind: string | undefined): FileChangeKind {
   }
 }
 
+/**
+ * Mapper signature for translating thread events into normalized Codex events.
+ *
+ * @see docs/specs/020-codex-backends.md
+ */
 export type ThreadEventMapper = (
   event: ThreadEventLike,
 ) => readonly CodexEvent[];
 
+/**
+ * Create a mapper that normalizes exec or SDK thread events.
+ *
+ * @param backend - Backend identifier used for event metadata.
+ * @returns Mapper function for normalized events.
+ * @see docs/specs/020-codex-backends.md
+ */
 export function createThreadEventMapper(
   backend: CodexBackendKind,
 ): ThreadEventMapper {
