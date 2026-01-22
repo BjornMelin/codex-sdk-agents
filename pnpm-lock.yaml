@@ -63,7 +63,7 @@ importers:
   packages/mcp:
     dependencies:
       '@ai-sdk/mcp':
-        specifier: ^1.0.9
+        specifier: ^1.0.11
         version: 1.0.11(zod@4.3.5)
       ai:
         specifier: ^6.0.45
