@@ -28,10 +28,22 @@ This spec is optional and should only be implemented after the CLI system is sta
 
 ## Implementation details
 
-- Server Actions:
-  - `startRunAction(formData)` spawns `pnpm dev:cli -- run workflow ...` (dev)
-  - store PID and return runId
-- Streaming is optional; initial version can poll.
+### Server Actions and process spawn safety
+
+- `startRunAction(formData)` spawns `pnpm dev:cli -- run workflow ...` (dev only)
+- **Spawn requirements**:
+  - Use argument arrays (no shell strings) for process spawn to prevent shell injection
+  - Validate and allowlist workflow names and spec inputs before spawning
+  - Persist run metadata (PID, startTime, status, exitCode, logPaths) via a durable store (e.g., `.codex-toolloop/ui-runs.jsonl`)
+- **Concurrency and backpressure**:
+  - Define concurrency limits (e.g., max N simultaneous runs) to prevent resource exhaustion
+  - Implement backpressure by rejecting new runs if limit is reached
+- **Lifecycle management**:
+  - Implement cleanup/timeouts: kill stale processes after a configurable timeout (default: 1 hour)
+  - Support explicit cancel/kill semantics via a "stop run" button
+  - Provide graceful shutdown: on server shutdown, signal all child processes to terminate and wait for cleanup
+  - Avoid orphaned processes: poll process status periodically and mark as "orphaned" if process is gone but exit code is unknown
+- **Streaming**: Initial version can poll `~/.codex-toolloop/index.jsonl` and events.jsonl for updates; WebSocket/SSE streaming is optional.
 
 ## Security
 

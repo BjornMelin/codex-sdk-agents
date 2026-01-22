@@ -72,7 +72,7 @@ Tool sets can change between steps:
 - Step 3: add docs tools
 - Step 4: add build/test tools
 
-We will prefer the AI SDK's per-step tool configuration hooks (agent-level `prepa   reStep`, or equivalent call-option configuration) to minimize tool exposure.
+We will prefer the AI SDK's per-step tool configuration hooks (agent-level `prepareStep`, or equivalent call-option configuration) to minimize tool exposure.
 
 ### 4. Large-toolset mode: MCP meta-tools via dynamicTool
 

@@ -129,13 +129,21 @@ Define per-step output schemas:
   - failingTests?: string[]
   - notes: string
 - ReviewOutput:
-  - findings: array of { severity, area, description, evidencePaths, suggestions }
-  - docGaps: array of { docArea, gap, recommendation }
+  - findings: array of objects with:
+    - severity: `"low" | "medium" | "high"`
+    - area: `string`
+    - description: `string`
+    - evidencePaths: `string[]` (file paths or references)
+    - suggestions: `string[]` (recommended fixes or improvements)
+  - docGaps: array of objects with:
+    - docArea: `string` (section or topic)
+    - gap: `string` (what is missing or unclear)
+    - recommendation: `string` (suggested addition or clarification)
 - FinalReport:
-  - executiveSummary
-  - whatChanged
-  - howToVerify
-  - risksRemaining
+  - executiveSummary: `string` (high-level summary of work)
+  - whatChanged: `string` (description of modifications and their purpose)
+  - howToVerify: `string` (steps or commands to verify the work)
+  - risksRemaining: `string[] | null` (optional array of residual risks or known limitations)
 
 ## Acceptance criteria
 

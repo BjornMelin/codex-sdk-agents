@@ -19,6 +19,10 @@ You are implementing durable memory and context mechanisms that improve long-run
 - No external DB required.
 - No secrets persisted by default.
 - Fully typed.
+- **Atomic writes and file-level locking**: All writes to shared repo files (memory.json, indexes/, and summaries.jsonl appends) must use atomic-write patterns or OS-level locks to prevent corruption:
+  - For memory.json and index files: write to a temporary file, fsync, then atomic rename into place.
+  - For summaries.jsonl appends: use either O_APPEND with an exclusive append-lock, or write-then-rename append strategy.
+  - Fallback behavior: document how platforms lacking advisory locks are handled (e.g., Windows fallback or recommended workarounds).
 
 ## Files and structure
 

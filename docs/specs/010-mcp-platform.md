@@ -52,7 +52,10 @@ Configuration sources (highest precedence wins):
 
 1. **Runtime overrides** passed by the caller (`loadMcpConfig({ overrides })`)
 2. **Environment**: `CODEX_TOOLLOOP_MCP_CONFIG_JSON` (inline JSON)
-3. **File-based config** (explicit path, env path, or discovered config)
+3. **File-based config** with the following precedence order:
+   - explicit path argument (e.g., `loadMcpConfig({ path: "./custom.json" })`)
+   - environment variable (`CODEX_TOOLLOOP_MCP_CONFIG_PATH`)
+   - discovered config (auto-discovery of `codex-toolloop.mcp.json` or `.codex-toolloop/mcp.json` walking up from cwd)
 
 ### Environment variables
 
@@ -110,6 +113,7 @@ Bundle config:
   - tool names are server-local (pre-namespacing)
   - `allowTools` is optional for **trusted** servers
   - `allowTools` is **required** for **untrusted** servers (enforced by SPEC 011)
+  - **Precedence rule**: When both `allowTools` and `denyTools` are present, apply `allowTools` first to produce an initial allowed set, then remove any entries matched by `denyTools`. In other words, **deny overrides allow**. Example: if `allowTools = ["read", "write", "delete"]` and `denyTools = ["delete"]`, the final allowed set is `["read", "write"]`.
 
 ### Public API
 

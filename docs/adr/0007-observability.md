@@ -51,8 +51,17 @@ Normalized event schema includes:
 - Easy debugging and golden tests (compare event logs).
 - Enables future UI and trace visualization.
 
+## Artifact guarantees
+
+On abrupt termination (signal or crash):
+
+- **events.jsonl, codex-events.jsonl, tool-calls.jsonl**: Line-oriented JSONL files are appended as events arrive. Files remain line-delimited and parseable per-line even if the run is interrupted; the last line may be incomplete but does not corrupt prior entries.
+- **final-report.md**: Only written on successful completion. Absence of this file indicates the run did not finish cleanly (crash, signal, or error).
+- **Flush behavior**: On Node.js, JSONL files are flushed on signal handlers; final-report.md is only created on clean exit. Downstream tools can detect incomplete runs by checking for the absence of final-report.md or looking for a special "run_complete" event in events.jsonl.
+
 ## Implementation notes
 
 - Provide `EventBus` and `JsonlLogger`.
 - Redact secrets by default.
 - Truncate large tool outputs with a stable policy and preserve hashes.
+- Install signal handlers for deterministic flush and artifact finalization.

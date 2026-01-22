@@ -19,8 +19,8 @@ Because STDIO MCP requires Node's process APIs, the repo standardizes on:
 - **Node.js v24 LTS** for runtime compatibility and long-term support.
 - **pnpm** for workspace/package management.
 
-Node 24 is currently in **Active LTS** status per Node.js' official release lifecycle listing. See:
-<https://nodejs.org/en/about/previous-releases>.
+Node 24 is in Active LTS (through October 2026) — see the Node.js release schedule at
+<https://nodejs.org/en/about/previous-releases> for current status.
 
 ## Decision
 
