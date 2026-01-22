@@ -12,7 +12,7 @@ You are implementing the Codex ToolLoop core runtime in `packages/codex-toolloop
 
 ## Hard requirements
 
-- Zod v4.3.5 for all step IO schemas.
+- Zod v4.3.6 for all step IO schemas.
 - Each step must validate its output before passing to next step.
 - Every step must write artifacts through an `ArtifactStore`.
 - Every run emits events through the normalized event bus.

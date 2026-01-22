@@ -6,7 +6,7 @@ This directory contains the implementation specifications for the project. These
 
 | ID | Title |
 | :--- | :--- |
-| 000 | [Bootstrap the Codex ToolLoop monorepo (Node v24 LTS + pnpm + TS strict + Zod v4.3.5 + Vitest)](000-bootstrap-monorepo.md) |
+| 000 | [Bootstrap the Codex ToolLoop monorepo (Node v24 LTS + pnpm + TS strict + Zod v4.3.6 + Vitest)](000-bootstrap-monorepo.md) |
 | 010 | [MCP platform (first-party MCP servers + client manager + dynamic tool registry)](010-mcp-platform.md) |
 | 011 | [Dynamic tool loading (dynamicTool + on-demand MCP server tooling)](011-dynamic-tool-loading.md) |
 | 020 | [Codex backends (AI SDK app-server default + exec JSONL + optional TS SDK)](020-codex-backends.md) |

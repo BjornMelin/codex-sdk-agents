@@ -45,7 +45,7 @@ Secondary persona: “Team engineer / reviewer”
 3. Provide best-in-class local DX:
    - Node.js v24 LTS runtime for CLI and servers (required for AI SDK MCP STDIO support).
    - pnpm workspaces for package management (Corepack-enabled).
-   - Type-safe Zod v4.3.5 schemas across tool inputs/outputs and structured outputs.
+   - Type-safe Zod v4.3.6 schemas across tool inputs/outputs and structured outputs.
    - Vitest test setup for unit, integration, and type-level tests.
 
 4. Provide end-to-end observability:
@@ -271,7 +271,7 @@ Risk: Overusing Codex context and hitting usage limits.
 
 ### Phase 0: Bootstrap
 
-- Repo scaffolding with pnpm workspaces, strict TS, Zod v4.3.5.
+- Repo scaffolding with pnpm workspaces, strict TS, Zod v4.3.6.
 - Environment doctor.
 - Minimal MCP server + client manager.
 - Minimal Codex backend (exec mode).

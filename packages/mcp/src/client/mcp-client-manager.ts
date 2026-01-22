@@ -176,7 +176,7 @@ export class McpClientManager {
     }
 
     const client = await entry.clientPromise;
-    const tools = await client.tools(options);
+    const tools = (await client.tools(options)) as ToolSet;
 
     entry.toolsCache = {
       tools,

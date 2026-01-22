@@ -9,8 +9,8 @@
   },
   "dependencies": {
     "@openai/codex-sdk": "^0.88.0",
-    "ai": "^6.0.45",
+    "ai": "^6.0.48",
     "ai-sdk-provider-codex-app-server": "^1.1.7",
-    "zod": "^4.3.5"
+    "zod": "^4.3.6"
   }
 }

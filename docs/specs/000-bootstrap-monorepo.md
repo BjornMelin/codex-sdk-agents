@@ -1,4 +1,4 @@
-# SPEC 000: Bootstrap the Codex ToolLoop monorepo (Node v24 LTS + pnpm + TS strict + Zod v4.3.5 + Vitest)
+# SPEC 000: Bootstrap the Codex ToolLoop monorepo (Node v24 LTS + pnpm + TS strict + Zod v4.3.6 + Vitest)
 
 Status: **Implemented** (updated for Node v24 LTS + pnpm)
 
@@ -14,7 +14,7 @@ Status: **Implemented** (updated for Node v24 LTS + pnpm)
 - Node.js **v24 LTS** runtime (ADR 0001).
 - pnpm workspaces (ADR 0001).
 - TypeScript strict, no `any`.
-- Zod v4.3.5 for any schema validation.
+- Zod v4.3.6 for any schema validation.
 - Biome for lint + format.
 - Vitest for testing (ADR 0006).
 

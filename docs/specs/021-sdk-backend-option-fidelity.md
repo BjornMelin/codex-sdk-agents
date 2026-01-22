@@ -32,8 +32,8 @@ Inspected versions (from `opensrc list`):
 
 - `@openai/codex-sdk@0.88.0`
 - `@openai/codex@0.88.0`
-- `ai@6.0.45`
-- `zod@4.3.5`
+- `ai@6.0.48`
+- `zod@4.3.6`
 
 Key details:
 
