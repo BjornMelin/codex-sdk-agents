@@ -30,7 +30,7 @@
     "examples:review": "tsx examples/review.ts"
   },
   "dependencies": {
-    "@openai/codex-sdk": "^0.87.0",
+    "@openai/codex-sdk": "^0.88.0",
     "ai": "^6.0.45",
     "zod": "^4.3.5"
   },

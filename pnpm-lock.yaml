@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@openai/codex-sdk':
-        specifier: ^0.87.0
-        version: 0.87.0
+        specifier: ^0.88.0
+        version: 0.88.0
       ai:
         specifier: ^6.0.45
         version: 6.0.45(zod@4.3.5)
@@ -46,8 +46,8 @@ importers:
   packages/codex:
     dependencies:
       '@openai/codex-sdk':
-        specifier: ^0.87.0
-        version: 0.87.0
+        specifier: ^0.88.0
+        version: 0.88.0
       ai:
         specifier: ^6.0.45
         version: 6.0.45(zod@4.3.5)
@@ -312,8 +312,8 @@ packages:
   '@jridgewell/sourcemap-codec@1.5.5':
     resolution: {integrity: sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og==}
 
-  '@openai/codex-sdk@0.87.0':
-    resolution: {integrity: sha512-HV9DKSCq1PTc1Ti1XvfXFgwc+WR1sPT2JSyPkFkDV5Ip1lkK4C0WeQ++WE4y0fSIS3x3XtBGmdT4oDfaeqj63g==}
+  '@openai/codex-sdk@0.88.0':
+    resolution: {integrity: sha512-EzW86JHyv94WBKpS6jhOHvrLIc2xNzinzjGk/+LzarAMwD8U2QNryQx7mxI7aWd5spANrlaX3j/rG7/db8oe3w==}
     engines: {node: '>=18'}
 
   '@opentelemetry/api@1.9.0':
@@ -888,7 +888,7 @@ snapshots:
 
   '@jridgewell/sourcemap-codec@1.5.5': {}
 
-  '@openai/codex-sdk@0.87.0': {}
+  '@openai/codex-sdk@0.88.0': {}
 
   '@opentelemetry/api@1.9.0': {}
 
