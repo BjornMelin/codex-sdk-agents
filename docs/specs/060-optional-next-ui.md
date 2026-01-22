@@ -34,6 +34,13 @@ This spec is optional and should only be implemented after the CLI system is sta
   runs `pnpm dev:cli -- run workflow ...`; in production it should call a
   built/installed CLI entrypoint (for example `codex-toolloop run workflow ...`)
   or be disabled if the UI is distributed without a local CLI.
+- **Runtime constraint**: `startRunAction(formData)` and any server-side
+  spawner MUST run in the Node.js runtime (not Edge) because `child_process` is
+  unsupported in Edge. In dev, execute the local CLI via
+  `pnpm dev:cli -- run workflow ...`. In prod, execute the built/installed CLI
+  entrypoint (for example `codex-toolloop run workflow ...`). If the UI is
+  distributed without a local CLI, the action must be disabled or handled via a
+  non-spawn alternative.
 - **Spawn requirements**:
   - Use argument arrays (no shell strings) for process spawn to prevent shell injection
   - **Workflow validation**:

@@ -306,12 +306,12 @@ export function createMcpMetaTools(
         buildToolAccessPolicy(policy),
       ).sort((a, b) => a.localeCompare(b));
 
-      const capped = names.slice(0, limits.maxToolsPerServer);
       const start = offset ?? 0;
       const end = limit ? start + limit : undefined;
-      const page = capped.slice(start, end);
+      const page = names.slice(start, end);
+      const capped = page.slice(0, limits.maxToolsPerServer);
 
-      return page.map((name) => ({
+      return capped.map((name) => ({
         name,
         description: getToolDescription(
           toolSet[name],
