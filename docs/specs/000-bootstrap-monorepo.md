@@ -21,15 +21,15 @@ Status: **Implemented** (updated for Node v24 LTS + pnpm)
 ## Repo layout
 
 - `apps/`
-  - `cli/` – bootstrap CLI
+  - `cli/` -- bootstrap CLI
 - `packages/`
-  - `mcp/` – MCP platform
-  - `codex/` – Codex backend integrations
-  - `codex-toolloop/` – workflow engine + orchestration
-  - `workflows/` – workflow definitions
+  - `mcp/` -- MCP platform
+  - `codex/` -- Codex backend integrations
+  - `codex-toolloop/` -- workflow engine + orchestration
+  - `workflows/` -- workflow definitions
 - `docs/`
-  - `adr/` – architecture decisions
-  - `specs/` – system specifications
+  - `adr/` -- architecture decisions
+  - `specs/` -- system specifications
 
 ## Required root scripts
 

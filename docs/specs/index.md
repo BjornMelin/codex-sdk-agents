@@ -10,10 +10,12 @@ This directory contains the implementation specifications for the project. These
 | 010 | [MCP platform (first-party MCP servers + client manager + dynamic tool registry)](010-mcp-platform.md) |
 | 011 | [Dynamic tool loading (dynamicTool + on-demand MCP server tooling)](011-dynamic-tool-loading.md) |
 | 020 | [Codex backends (AI SDK app-server default + exec JSONL + optional TS SDK)](020-codex-backends.md) |
+| 021 | [SDK backend option fidelity](021-sdk-backend-option-fidelity.md) |
 | 030 | [Agent runtime and workflow engine (multi-agent, typed handoffs, context packs)](030-agent-runtime.md) |
 | 040 | [Codex ToolLoop CLI (commands, streaming UX, sessions, run artifacts)](040-cli.md) |
 | 050 | [Memory, context packs, and cross-run knowledge](050-memory-context.md) |
 | 060 | [(Optional): Local Next.js UI for monitoring runs and browsing artifacts](060-optional-next-ui.md) |
+| 070 | [Security, Code Quality, and Maintenance Infrastructure](070-security-and-maintenance.md) |
 | 080 | [Turborepo monorepo configuration (Vercel-ready)](080-turborepo-monorepo.md) |
 
 ---

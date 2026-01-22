@@ -137,7 +137,7 @@ Output:
 
 ## 6) Functional requirements
 
-### FR1: CLI interface
+### FR1: CLI
 
 - Commands:
   - `codex-toolloop doctor` (verify environment: node, pnpm, codex CLI, auth, MCP connectivity)
