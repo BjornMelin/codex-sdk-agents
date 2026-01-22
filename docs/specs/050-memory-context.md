@@ -208,19 +208,70 @@ At the end of each workflow step:
 
 ## Safety and redaction
 
-- Implement redaction pipeline:
-  - basic token-like patterns
-  - env var name matches
-  - optional user-supplied patterns in config
+Implement a **RedactionPipeline** with the following ordered stages to prevent secrets from being persisted:
+
+1. **Canonicalization/Normalization**:
+   - Normalize whitespace (collapse multiple spaces/tabs to single space)
+   - Interpolate and expand environment variable references (e.g., `$VAR`, `${VAR}`, `process.env.VAR`)
+
+2. **Built-in token-like regex rules** (applied in order; first match wins):
+   - **API keys and credentials**:
+     - Bearer tokens: `(?i)bearer\s+[a-zA-Z0-9\._\-]+` (matches `bearer ghp_abc123`)
+     - AWS keys: `(?i)(AKIA|ASIA)[0-9A-Z]{16}` (AWS access key ID format)
+     - Generic API key pattern: `(?i)api[_-]?key\s*[:=]\s*[a-zA-Z0-9\-_]{20,}` (matches `api_key: secret123abc...`)
+   - **UUIDs and tokens**:
+     - UUID pattern: `[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}` (including versions)
+   - **Email addresses**:
+     - Email pattern: `[a-zA-Z0-9._%\-+]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}`
+   - **Private keys**:
+     - PEM private key: `-----BEGIN.*PRIVATE KEY-----` ... `-----END.*PRIVATE KEY-----` (multiline)
+     - Base64-like key blocks: `[A-Za-z0-9+/]{40,}={0,2}` (if preceded by key-like labels)
+
+3. **Environment variable name lookups** (using provided env names list):
+   - Match known sensitive variable patterns: `PASSWORD`, `SECRET`, `TOKEN`, `KEY`, `API_KEY`, `AWS_`, `GITHUB_`, `OPENAI_`, etc.
+   - If an env var name is in the sensitive list and its value appears in the text, mask the value
+
+4. **Optional user-supplied patterns** (from config):
+   - Apply custom regex rules from `redaction.customPatterns` config array
+   - Each custom pattern: `{ regex: string, name?: string }` (name used in masking output)
+
+5. **Token replacement strategy**:
+   - Default masking format: `[REDACTED:<pattern-name>]` (e.g., `[REDACTED:api_key]`, `[REDACTED:uuid]`)
+   - Preserve length option (configurable): if enabled, replace with same number of asterisks (e.g., `ghp_abc123` → `****** (6 chars)`)
+   - Log redaction events to audit trail (optional; disabled by default) with pattern name and occurrence count
+
+6. **Error handling**:
+   - If a custom regex is invalid (compilation fails), log a warning and skip that pattern; do not fail the redaction pipeline
+   - If redaction regex matching fails due to timeout (very large text), fall back to simpler substring-based patterns
+   - Document any failures in a warning log with context (line number in memory.json or summaries.jsonl)
 
 ## Testing
 
-- Unit tests for:
-  - repoHash stability
-  - memory CRUD
-  - redaction behavior
-- Integration tests:
-  - run a mocked workflow and ensure summaries are persisted and used
+- **Unit tests** for:
+  - repoHash stability (POSIX rename, branch scoping, SSH URL normalization)
+  - memory CRUD operations (create, read, update, delete conventions/decisions/notes)
+  - redaction behavior (verify patterns are masked, sensitive env vars are masked)
+
+- **Concurrency and locking tests** (addressing atomic write and locking behavior from lines 22–38):
+  - **Lock acquisition**: Verify that multiple concurrent writers block each other (exclusive lock)
+  - **Reader-writer behavior**: Verify that concurrent readers succeed while a writer blocks readers (fair scheduling)
+  - **Lock timeouts**: Verify that lock acquisition throws `LockAcquisitionError` when timeout is exceeded (default 5s for write, 1s for append)
+  - **Atomic writes**: Simulate process crash during write (e.g., kill process after temp file is created but before rename). Verify that:
+    - Old memory.json remains intact (rollback behavior)
+    - No partial data is written to disk
+    - Next operation succeeds with correct lock semantics
+  - **Summaries append atomicity**: Spawn 5+ concurrent tasks appending summaries. Verify:
+    - All summaries are persisted (no lost writes)
+    - summaries.jsonl is valid JSONL (one JSON object per line)
+    - File is never in a partially-written state (readers always see complete lines)
+    - Lock-free retry on EWOULDBLOCK (Windows) succeeds within timeout
+
+- **Integration tests**:
+  - Run a mocked workflow with multiple steps appending summaries concurrently. Verify:
+    - summaries are persisted and used in context packs
+    - pruning rules trigger correctly (max entries, max size)
+    - redaction prevents secrets from being written to memory.json or summaries.jsonl
+  - Test cross-process access: launch two independent CLI processes accessing the same repoHash simultaneously. Verify lock behavior and consistency
 
 ## Acceptance criteria
 

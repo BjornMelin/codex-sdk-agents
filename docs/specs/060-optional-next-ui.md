@@ -62,7 +62,7 @@ This spec is optional and should only be implemented after the CLI system is sta
   - Implement cleanup/timeouts: kill stale processes after a configurable timeout (default: 1 hour)
   - Support explicit cancel/kill semantics via a "stop run" button
   - Provide graceful shutdown: on server shutdown, signal all child processes to terminate and wait for cleanup
-  - Avoid orphaned processes: poll process status periodically and mark as "orphaned" if process is gone but exit code is unknown
+  - Avoid orphaned processes: poll process status periodically and mark as "orphaned" if process is gone but exit code is unknown.
 
 ### Configuration
 
@@ -71,12 +71,13 @@ Configuration for concurrency, timeouts, and polling can be set via environment 
 **Concurrency and timeout settings:**
 
 | Setting | Env Var | Config Key | Default | Description |
-|---------|---------|-----------|---------|-------------|
+| ------- | ------- | ---------- | ------- | ----------- |
 | Max concurrent runs | `UI_MAX_CONCURRENT_RUNS` | `ui.maxConcurrentRuns` | 3 | Maximum number of simultaneous workflow runs allowed |
 | Run timeout | `UI_RUN_TIMEOUT_MS` | `ui.runTimeoutMs` | 3600000 (1 hour) | Timeout in milliseconds; runs exceeding this are killed |
 | Poll interval | `UI_POLL_INTERVAL_MS` | `ui.pollIntervalMs` | 1000 | Polling interval in milliseconds for status updates |
 
 **Configuration file example** (`.codex-toolloop/config.json`):
+
 ```json
 {
   "ui": {
@@ -103,6 +104,7 @@ Each record provides UI-level run tracking and references the canonical run
 artifacts by `runId`.
 
 Required fields:
+
 - `runId: string` -- run identifier, matches run directory name.
 - `pid: number` -- spawned process ID.
 - `startTime: string` -- ISO timestamp.
@@ -124,6 +126,7 @@ Required fields:
   - **Authority:** CLI sets all normal terminal states (`completed`, `failed`, `killed`) via exit codes/signals; UI may only set `orphaned` after process verification.
 
 Optional fields:
+
 - `exitCode?: number`
 - `signal?: string`
 - `workflowId?: string`
@@ -132,11 +135,13 @@ Optional fields:
 - `metadata?: Record<string, unknown>`
 
 Relationship to other files:
+
 - `ui-runs.jsonl` is UI-facing metadata only and references `runId`.
 - `~/.codex-toolloop/index.jsonl` remains the canonical run index; the UI should
   reconcile state using `runId` and `meta.json` under each run directory.
 
 Versioning:
+
 - Include `schemaVersion?: number` in new records when fields change; maintain
   backward-compatible readers.
 
