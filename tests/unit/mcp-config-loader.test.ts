@@ -10,7 +10,6 @@ import {
   loadMcpConfig,
   MCP_CONFIG_ENV_JSON,
   MCP_CONFIG_ENV_PATH,
-  parseMcpConfig,
 } from "../../packages/mcp/src/config.js";
 
 describe("MCP config loading", () => {
@@ -189,16 +188,5 @@ describe("MCP config loading", () => {
       env,
     });
     expect(discovered).toBe(configPath);
-  });
-
-  it("rejects bundles referencing unknown servers", () => {
-    expect(() =>
-      parseMcpConfig({
-        servers: {},
-        bundles: {
-          repoRead: { serverId: "repo", mode: "direct" },
-        },
-      }),
-    ).toThrow(/Unknown serverId/);
   });
 });

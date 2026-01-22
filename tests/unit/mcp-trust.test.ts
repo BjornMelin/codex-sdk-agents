@@ -1,23 +1,7 @@
 import { describe, expect, it } from "vitest";
-import type { McpClient } from "../../packages/mcp/src/client/create-ai-sdk-mcp-client.js";
 import { McpClientManager } from "../../packages/mcp/src/client/mcp-client-manager.js";
 import { DynamicToolRegistry } from "../../packages/mcp/src/registry/dynamic-tool-registry.js";
-
-type McpToolSet = Record<string, unknown>;
-
-function makeClient(): McpClient {
-  const tools: McpToolSet = {};
-  return {
-    tools: async () => tools,
-    listResources: async () => ({ resources: [] }),
-    readResource: async () => ({ contents: [] }),
-    listResourceTemplates: async () => ({ resourceTemplates: [] }),
-    experimental_listPrompts: async () => ({ prompts: [] }),
-    experimental_getPrompt: async () => ({ messages: [] }),
-    onElicitationRequest: () => {},
-    close: async () => {},
-  } as McpClient;
-}
+import { makeClient } from "../helpers/mcp-mocks.js";
 
 describe("MCP trust enforcement", () => {
   it("rejects direct bundles for untrusted servers", async () => {
@@ -107,7 +91,7 @@ describe("MCP trust enforcement", () => {
         },
       },
       toolsTtlMs: 60_000,
-      factory: async () => makeClient(),
+      factory: async () => makeClient({}),
     });
 
     const registry = new DynamicToolRegistry({

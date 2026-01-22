@@ -84,21 +84,21 @@ export type CodexToolCompletedEvent = CodexEventBase & {
 /** Emitted when Codex reports a file change. */
 export type CodexFileChangedEvent = CodexEventBase & {
   type: "codex.file.changed";
-  threadId?: string;
-  turnId?: string;
+  threadId?: string | undefined;
+  turnId?: string | undefined;
   path: string;
   kind: "added" | "modified" | "deleted" | "renamed" | "unknown";
-  summary?: string;
+  summary?: string | undefined;
 };
 
 /** Emitted when Codex executes a shell command. */
 export type CodexCommandExecutedEvent = CodexEventBase & {
   type: "codex.command.executed";
-  threadId?: string;
-  turnId?: string;
+  threadId?: string | undefined;
+  turnId?: string | undefined;
   command: string;
-  exitCode?: number;
-  aggregatedOutputTail?: string;
+  exitCode?: number | undefined;
+  aggregatedOutputTail?: string | undefined;
 };
 
 /** Raw stdout lines from exec backend subprocesses. */

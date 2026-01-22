@@ -1,35 +1,20 @@
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
-import type { McpClient } from "../../packages/mcp/src/client/create-ai-sdk-mcp-client.js";
 import { McpClientManager } from "../../packages/mcp/src/client/mcp-client-manager.js";
 import { createMcpMetaTools } from "../../packages/mcp/src/meta-tools.js";
-
-type McpToolSet = Record<string, unknown>;
-
-function makeClient(tools: McpToolSet): McpClient {
-  return {
-    tools: async () => tools,
-    listResources: async () => ({ resources: [] }),
-    readResource: async () => ({ contents: [] }),
-    listResourceTemplates: async () => ({ resourceTemplates: [] }),
-    experimental_listPrompts: async () => ({ prompts: [] }),
-    experimental_getPrompt: async () => ({ messages: [] }),
-    onElicitationRequest: () => {},
-    close: async () => {},
-  } as McpClient;
-}
+import { type McpToolSet, makeClient } from "../helpers/mcp-mocks.js";
 
 describe("createMcpMetaTools", () => {
-  it("returns a safe error when callTool input is invalid", async () => {
-    const tools = {
-      echo: {
-        description: "echo",
-        inputSchema: z.object({ text: z.string() }),
-        execute: async ({ text }: { text: string }) => ({ text }),
-      },
-    } as McpToolSet;
+  const tools = {
+    echo: {
+      description: "echo",
+      inputSchema: z.object({ text: z.string() }),
+      execute: async ({ text }: { text: string }) => ({ text }),
+    },
+  } as McpToolSet;
 
-    const manager = new McpClientManager({
+  const makeManager = () =>
+    new McpClientManager({
       servers: {
         repo: {
           id: "repo",
@@ -39,6 +24,9 @@ describe("createMcpMetaTools", () => {
       },
       factory: async () => makeClient(tools),
     });
+
+  it("returns a safe error when callTool input is invalid", async () => {
+    const manager = makeManager();
 
     const meta = createMcpMetaTools({
       clientManager: manager,
@@ -53,6 +41,67 @@ describe("createMcpMetaTools", () => {
     expect(result).toEqual({
       ok: false,
       error: "Invalid input for mcp.callTool.",
+    });
+  });
+
+  it("executes allowed tools successfully", async () => {
+    const manager = makeManager();
+    const meta = createMcpMetaTools({
+      clientManager: manager,
+      policyByServer: { repo: { allowTools: ["echo"] } },
+    });
+
+    const callTool = meta["mcp.callTool"] as {
+      execute: (input: unknown, options: unknown) => Promise<unknown>;
+    };
+
+    const result = (await callTool.execute(
+      { serverId: "repo", toolName: "echo", args: { text: "hi" } },
+      {},
+    )) as { ok: boolean; result?: { text: string } };
+
+    expect(result.ok).toBe(true);
+    expect(result.result).toEqual({ text: "hi" });
+  });
+
+  it("lists allowed tools", async () => {
+    const manager = makeManager();
+    const meta = createMcpMetaTools({
+      clientManager: manager,
+      policyByServer: { repo: { allowTools: ["echo"] } },
+    });
+
+    const listTools = meta["mcp.listTools"] as {
+      execute: (input: unknown) => Promise<unknown>;
+    };
+
+    const result = (await listTools.execute({ serverId: "repo" })) as Array<{
+      name: string;
+      description: string;
+    }>;
+
+    expect(result).toEqual([{ name: "echo", description: "echo" }]);
+  });
+
+  it("returns not-allowed error when policy excludes tool", async () => {
+    const manager = makeManager();
+    const meta = createMcpMetaTools({
+      clientManager: manager,
+      policyByServer: { repo: { allowTools: ["other"] } },
+    });
+
+    const callTool = meta["mcp.callTool"] as {
+      execute: (input: unknown, options: unknown) => Promise<unknown>;
+    };
+
+    const result = (await callTool.execute(
+      { serverId: "repo", toolName: "echo", args: { text: "hi" } },
+      {},
+    )) as { ok: boolean; error?: string };
+
+    expect(result).toEqual({
+      ok: false,
+      error: "Tool 'echo' is not allowed or does not exist on server 'repo'.",
     });
   });
 });

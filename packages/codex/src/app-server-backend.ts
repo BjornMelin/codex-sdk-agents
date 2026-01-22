@@ -183,6 +183,27 @@ export class AppServerBackend implements CodexBackend {
       envOverrides: options.env ?? null,
     });
 
+    const emit = async (event: CodexEvent) => {
+      if (!onEvent) {
+        return;
+      }
+      await onEvent(event);
+    };
+
+    let threadStartedEmitted = false;
+    const emitThreadStarted = async () => {
+      if (threadStartedEmitted || !this.lastThreadId) {
+        return;
+      }
+      threadStartedEmitted = true;
+      await emit({
+        type: "codex.thread.started",
+        backend: this.kind,
+        timestampMs: nowMs(),
+        threadId: this.lastThreadId,
+      });
+    };
+
     if (this.provider === null || this.providerSettingsKey !== settingsKey) {
       this.providerSettingsKey = settingsKey;
       this.session = null;
@@ -208,6 +229,7 @@ export class AppServerBackend implements CodexBackend {
           onSessionCreated: (s) => {
             this.session = s;
             this.lastThreadId = s.threadId;
+            void emitThreadStarted();
           },
         },
       });
@@ -216,18 +238,13 @@ export class AppServerBackend implements CodexBackend {
     const provider = this.provider;
     const model = provider(modelId, { threadMode });
 
-    const emit = async (event: CodexEvent) => {
-      if (!onEvent) {
-        return;
-      }
-      await onEvent(event);
-    };
-
-    let threadStartedEmitted = false;
-
     const result = await streamText({
       model,
       prompt,
+      ...(options.signal ? { abortSignal: options.signal } : {}),
+      ...(options.timeoutMs !== undefined
+        ? { timeout: options.timeoutMs }
+        : {}),
       providerOptions: {
         "codex-app-server": {
           reasoningEffort,
@@ -239,15 +256,7 @@ export class AppServerBackend implements CodexBackend {
     try {
       for await (const part of result.fullStream) {
         if (part.type === "text-delta") {
-          if (!threadStartedEmitted && this.lastThreadId) {
-            threadStartedEmitted = true;
-            await emit({
-              type: "codex.thread.started",
-              backend: this.kind,
-              timestampMs: nowMs(),
-              threadId: this.lastThreadId,
-            });
-          }
+          await emitThreadStarted();
 
           const textDelta = part.text;
           await emit({

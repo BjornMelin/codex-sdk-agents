@@ -136,8 +136,16 @@ function mergeSignals(
   }
   const controller = new AbortController();
   const onAbort = () => controller.abort();
-  a.addEventListener("abort", onAbort);
-  b.addEventListener("abort", onAbort);
+  a.addEventListener("abort", onAbort, { once: true });
+  b.addEventListener("abort", onAbort, { once: true });
+  controller.signal.addEventListener(
+    "abort",
+    () => {
+      a.removeEventListener("abort", onAbort);
+      b.removeEventListener("abort", onAbort);
+    },
+    { once: true },
+  );
   if (a.aborted || b.aborted) {
     controller.abort();
   }
@@ -206,15 +214,7 @@ export class ExecBackend implements CodexBackend {
 
       const timeoutSignal = createTimeoutSignal(options.timeoutMs);
       const signal = mergeSignals(options.signal, timeoutSignal);
-
-      const child = spawn(command, args, {
-        cwd,
-        env,
-        stdio: ["ignore", "pipe", "pipe"],
-      });
-
-      let stdoutTail = "";
-      let stderrTail = "";
+      let child: ReturnType<typeof spawn> | undefined;
 
       const emit = async (event: CodexEvent) => {
         if (!onEvent) {
@@ -226,7 +226,7 @@ export class ExecBackend implements CodexBackend {
       const stop = async (reason: string) => {
         // Best-effort graceful stop.
         try {
-          child.kill("SIGTERM");
+          child?.kill("SIGTERM");
         } catch {
           // ignore
         }
@@ -241,6 +241,11 @@ export class ExecBackend implements CodexBackend {
       if (signal) {
         if (signal.aborted) {
           await stop("Aborted before completion");
+          return {
+            backend: this.kind,
+            model: options.model ?? DEFAULT_CODEX_MODEL,
+            text: "",
+          };
         } else {
           signal.addEventListener("abort", () => {
             void stop("Aborted");
@@ -248,7 +253,23 @@ export class ExecBackend implements CodexBackend {
         }
       }
 
-      child.stderr.on("data", (chunk: Buffer) => {
+      child = spawn(command, args, {
+        cwd,
+        env,
+        stdio: ["ignore", "pipe", "pipe"],
+      });
+
+      if (!child.stdout || !child.stderr) {
+        throw new CodexBackendError("codex exec did not provide stdio pipes");
+      }
+
+      const stdout = child.stdout;
+      const stderr = child.stderr;
+
+      let stdoutTail = "";
+      let stderrTail = "";
+
+      stderr.on("data", (chunk: Buffer) => {
         const text = chunk.toString("utf8");
         stderrTail = tail(`${stderrTail}${text}`, 8_000);
         if (onEvent) {
@@ -261,7 +282,7 @@ export class ExecBackend implements CodexBackend {
         }
       });
 
-      const rl = createInterface({ input: child.stdout });
+      const rl = createInterface({ input: stdout });
 
       let lastText = "";
       let threadId: string | undefined;
