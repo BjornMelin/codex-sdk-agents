@@ -32,6 +32,7 @@ Create `turbo.json` at the repo root with:
 - `env`/`globalEnv` to ensure cache keys reflect environment-specific builds.
 - Root tasks for Biome and Vitest to avoid per-package duplication.
 - `globalDependencies` including lockfiles and config files so dependency/config changes invalidate caches.
+- Avoid `.env` in `globalDependencies`; use `.env.example` and list explicit vars in `globalEnv`.
 
 Baseline configuration:
 
@@ -44,9 +45,9 @@ Baseline configuration:
     "pnpm-workspace.yaml",
     "tsconfig.json",
     "biome.json",
-    ".env*"
+    ".env.example"
   ],
-  "globalEnv": ["NODE_ENV", "VERCEL_ENV"],
+  "globalEnv": ["NODE_ENV", "VERCEL_ENV", "CI"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
@@ -64,6 +65,9 @@ Baseline configuration:
   }
 }
 ```
+
+Note: keep `.env.example` in sync with required environment variables and avoid
+committing machine-specific `.env` changes that would invalidate caches.
 
 If this repo adds a Next.js app, append:
 

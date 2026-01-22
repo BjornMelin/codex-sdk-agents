@@ -6,7 +6,11 @@ import type {
   CodexRunResult,
 } from "./backend.js";
 import { CodexBackendError } from "./backend.js";
-import { DEFAULT_CODEX_MODEL } from "./constants.js";
+import {
+  DEFAULT_APPROVAL_POLICY,
+  DEFAULT_CODEX_MODEL,
+  DEFAULT_SANDBOX_MODE,
+} from "./constants.js";
 import type { CodexEvent } from "./events.js";
 import {
   createThreadEventMapper,
@@ -92,8 +96,24 @@ export class SdkBackend implements CodexBackend {
         );
     }
 
-    const sandboxMode = options.sandboxMode ?? "read-only";
-    const approvalPolicy = options.approvalMode ?? "never";
+    const unsupported: string[] = [];
+    if (options.signal !== undefined) {
+      unsupported.push("signal");
+    }
+    if (options.timeoutMs !== undefined) {
+      unsupported.push("timeoutMs");
+    }
+    if (options.mcpServers !== undefined) {
+      unsupported.push("mcpServers");
+    }
+    if (unsupported.length > 0) {
+      throw new CodexBackendError(
+        `SDK backend does not support options: ${unsupported.join(", ")}.`,
+      );
+    }
+
+    const sandboxMode = options.sandboxMode ?? DEFAULT_SANDBOX_MODE;
+    const approvalPolicy = options.approvalMode ?? DEFAULT_APPROVAL_POLICY;
 
     const threadConfigKey = JSON.stringify({
       cwd,

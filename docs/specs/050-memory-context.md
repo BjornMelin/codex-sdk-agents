@@ -22,7 +22,16 @@ You are implementing durable memory and context mechanisms that improve long-run
 - **Atomic writes and file-level locking**: All writes to shared repo files (memory.json, indexes/, and summaries.jsonl appends) must use atomic-write patterns or OS-level locks to prevent corruption:
   - For memory.json and index files: write to a temporary file, fsync, then atomic rename into place.
   - For summaries.jsonl appends: use either O_APPEND with an exclusive append-lock, or write-then-rename append strategy.
-  - Fallback behavior: document how platforms lacking advisory locks are handled (e.g., Windows fallback or recommended workarounds).
+  - Windows and lock-less platforms: if POSIX advisory locks are unavailable, use
+    best-effort lock files (pid + timestamp + stale timeout) or rely on atomic
+    write/rename patterns; document that locking is advisory and may not
+    prevent all concurrent writers.
+  - EXDEV fallback: if atomic rename fails with EXDEV (cross-device move), fall
+    back to copy -> fsync -> verify -> unlink old file; if strong atomicity is
+    required, fail fast with a clear error and avoid partial writes.
+  - summaries.jsonl append guidance: prefer O_APPEND where supported; otherwise
+    write to a temp file and concatenate with verification, then rename, using a
+    best-effort lock to avoid lost writes.
 
 ## Files and structure
 
@@ -81,10 +90,36 @@ Define schemas:
 
 Expose APIs:
 
-- `getRepoMemory(repoHash)`
-- `upsertConvention(...)`
-- `appendSummary(runId, stepId, summaryText)`
-- `buildContextFromMemory(maxChars)`
+- `getRepoMemory(repoHash: string): Promise<RepoMemory>`
+  - Errors: throws on read/parse errors.
+- `upsertConvention(
+  repoHash: string,
+  convention: Partial<Convention> & Pick<Convention, "title" | "content">,
+): Promise<Convention>`
+  - Errors: throws on validation errors or write failures.
+- `appendSummary(
+  runId: string,
+  stepId: string,
+  summaryText: string,
+): Promise<void>`
+  - Errors: throws on append/write failures.
+- `buildContextFromMemory(
+  repoHash: string,
+  maxChars: number,
+): Promise<string>`
+  - Errors: throws on read/parse errors.
+
+Example usage:
+
+```ts
+const memory = await getRepoMemory(repoHash);
+const updated = await upsertConvention(repoHash, {
+  title: "Use pnpm workspaces",
+  content: "All packages live under packages/ with NodeNext ESM.",
+});
+await appendSummary(runId, stepId, "Added MCP tool caching.");
+const context = await buildContextFromMemory(repoHash, 8_000);
+```
 
 ## Compaction
 

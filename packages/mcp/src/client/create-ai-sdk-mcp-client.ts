@@ -29,18 +29,29 @@ type McpTransportInput = NonNullable<
   Parameters<typeof createMCPClient>[0]["transport"]
 >;
 
+function createStdioTransport(
+  config: Extract<McpTransportConfig, { type: "stdio" }>,
+): MCPTransport {
+  if (typeof Experimental_StdioMCPTransport !== "function") {
+    throw new Error(
+      "Experimental_StdioMCPTransport is unavailable; upgrade @ai-sdk/mcp or switch transports.",
+    );
+  }
+  return new Experimental_StdioMCPTransport({
+    command: config.command,
+    ...(config.args !== undefined ? { args: config.args } : {}),
+    ...(config.cwd !== undefined ? { cwd: config.cwd } : {}),
+    ...(config.env !== undefined ? { env: config.env } : {}),
+    ...(config.stderr !== undefined ? { stderr: config.stderr } : {}),
+  });
+}
+
 function createMcpTransportConfig(
   config: McpTransportConfig,
   authProvider?: OAuthClientProvider,
 ): McpTransportInput | MCPTransport {
   if (config.type === "stdio") {
-    return new Experimental_StdioMCPTransport({
-      command: config.command,
-      ...(config.args !== undefined ? { args: config.args } : {}),
-      ...(config.cwd !== undefined ? { cwd: config.cwd } : {}),
-      ...(config.env !== undefined ? { env: config.env } : {}),
-      ...(config.stderr !== undefined ? { stderr: config.stderr } : {}),
-    });
+    return createStdioTransport(config);
   }
 
   if (config.type === "sse") {

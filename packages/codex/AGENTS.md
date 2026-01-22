@@ -5,7 +5,7 @@
 - Monorepo root contains `apps/`, `packages/`, `tests/`, and `examples/`.
 - This package lives at `packages/codex/` with source in `packages/codex/src/`.
 - Build output for this package goes to `packages/codex/dist/` (TypeScript `outDir`).
-- Tests live in `tests/unit/` and some `src/**/*.test.ts` files at the repo root.
+- Tests live primarily in `tests/unit/`; some tests may live alongside source in `src/**/*.test.ts`.
 
 ## Build, Test, and Development Commands
 

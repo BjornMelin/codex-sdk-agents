@@ -150,18 +150,16 @@ export class AppServerBackend implements CodexBackend {
 
     const modelId =
       options.model ?? this.config.defaultModel ?? DEFAULT_CODEX_MODEL;
-    const threadMode: ProviderThreadMode = isProviderThreadMode(
-      options.threadMode ?? "persistent",
-    )
-      ? (options.threadMode ?? "persistent")
+    const rawThreadMode = options.threadMode ?? "persistent";
+    const threadMode: ProviderThreadMode = isProviderThreadMode(rawThreadMode)
+      ? rawThreadMode
       : "persistent";
 
     const reasoningEffort: ProviderReasoningEffort | undefined =
-      options.reasoningEffort === undefined
-        ? undefined
-        : isProviderReasoningEffort(options.reasoningEffort)
-          ? options.reasoningEffort
-          : undefined;
+      options.reasoningEffort !== undefined &&
+      isProviderReasoningEffort(options.reasoningEffort)
+        ? options.reasoningEffort
+        : undefined;
 
     if (
       options.reasoningEffort !== undefined &&
@@ -229,14 +227,16 @@ export class AppServerBackend implements CodexBackend {
           onSessionCreated: (s) => {
             this.session = s;
             this.lastThreadId = s.threadId;
-            void emitThreadStarted();
+            emitThreadStarted().catch((err) => {
+              console.error("Failed to emit thread.started event:", err);
+            });
           },
         },
       });
     }
 
     const provider = this.provider;
-    const model = provider(modelId, { threadMode });
+    const model = provider(modelId);
 
     const result = await streamText({
       model,

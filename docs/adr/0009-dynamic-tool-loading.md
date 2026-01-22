@@ -117,7 +117,7 @@ The MCP transport choice directly affects CPU usage, latency, connection pooling
 The choice of transport affects:
 
 - **Connection pooling:** HTTP/Streamable HTTP enable connection reuse; stdio does not support pooling.
-- **Cache TTLs:** Schema and tool-list caches (per ADR 0009 § 5) have shorter TTLs for stdio (local servers may restart without notice) and longer TTLs for HTTP (stable remote endpoints).
+- **Cache TTLs:** Schema and tool-list caches (as specified in § 5) have shorter TTLs for stdio (local servers may restart without notice) and longer TTLs for HTTP (stable remote endpoints).
 - **Client lifecycle:** Always close MCP clients when a run ends. For HTTP, this releases connection handles; for stdio, this terminates the spawned process. Connection cleanup is critical to prevent resource exhaustion on long-running CI systems.
 
 ### 5. Caching

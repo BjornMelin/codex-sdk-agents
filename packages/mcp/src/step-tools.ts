@@ -5,6 +5,9 @@ import type { McpServerConfig } from "./types.js";
 /**
  * Identifies a workflow step for tool resolution.
  *
+ * Note: this uses plain strings instead of branded workflow IDs to avoid
+ * coupling the MCP package to workflow-specific types.
+ *
  * @see docs/specs/011-dynamic-tool-loading.md
  */
 export type StepAddress = {
@@ -40,13 +43,21 @@ export type ResolveToolsForStepResult = {
 export class McpStepTools {
   readonly #registry: DynamicToolRegistry;
   readonly #resolveBundleIds: ResolveBundleIds;
+  readonly #ownsRegistry: boolean;
 
+  /**
+   * Create a new MCP step tool resolver.
+   *
+   * @param options - Resolver configuration.
+   */
   constructor(options: {
     registry: DynamicToolRegistry;
     resolveBundleIds: ResolveBundleIds;
+    ownsRegistry?: boolean;
   }) {
     this.#registry = options.registry;
     this.#resolveBundleIds = options.resolveBundleIds;
+    this.#ownsRegistry = options.ownsRegistry ?? true;
   }
 
   resolveBundles(address: StepAddress): readonly string[] {
@@ -64,6 +75,8 @@ export class McpStepTools {
   }
 
   async close(): Promise<void> {
-    await this.#registry.close();
+    if (this.#ownsRegistry) {
+      await this.#registry.close();
+    }
   }
 }

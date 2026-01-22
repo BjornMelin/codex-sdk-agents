@@ -65,8 +65,10 @@ On abrupt termination (signal or crash):
 - Redact secrets by default.
 - Truncate large tool outputs with a stable policy and preserve hashes.
 - **Media handling:** JsonlLogger treats non-text media (images, audio, files) as follows:
-  - Small media items (below a configurable size threshold) are included inline in tool-calls.jsonl as base64-encoded strings, accompanied by their MIME type and SHA-256 hash.
+  - Small media items (below a configurable size threshold, recommend <= 50 KB) are included inline in tool-calls.jsonl as base64-encoded strings, accompanied by their MIME type and SHA-256 hash. Base64 inflates size by ~33%, so keep thresholds conservative and monitor token overhead.
   - Media above the size threshold is written to a separate artifact file; tool-calls.jsonl records the artifact path/ID, MIME type, and SHA-256 hash instead of the full base64 blob.
   - EventBus consumers must handle both inline base64+hash and external artifact reference+hash representations.
+  - Transport matters (see ADR 0003): HTTP/SSE transports can stream or return download URLs, while stdio forces base64-in-JSON. Prefer HTTP/SSE for media-heavy workloads.
+  - Vendoring: prefer external storage references/URLs over embedding large base64 blobs to reduce payload size and enable lazy loading; keep hashes for integrity.
 - Explicitly preserve SHA-256 hashes for all media: both inline base64 items and external artifact files record their hash to enable integrity verification and deduplication across runs.
 - Install signal handlers for deterministic flush and artifact finalization.

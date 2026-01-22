@@ -160,10 +160,14 @@ export class McpClientManager {
     serverId: string,
     options?: Parameters<McpClient["tools"]>[0],
   ): Promise<ToolSet> {
-    const entry = this.#clients.get(serverId) ?? {
-      clientPromise: this.getClient(serverId),
-    };
-    this.#clients.set(serverId, entry);
+    let entry = this.#clients.get(serverId);
+    if (!entry) {
+      await this.getClient(serverId);
+      entry = this.#clients.get(serverId);
+    }
+    if (!entry) {
+      throw new Error(`Failed to initialize MCP client for ${serverId}.`);
+    }
 
     const now = Date.now();
     const cached = entry.toolsCache;
@@ -193,9 +197,13 @@ export class McpClientManager {
       return;
     }
 
-    const client = await entry.clientPromise;
-    await client.close();
     this.#clients.delete(serverId);
+    try {
+      const client = await entry.clientPromise;
+      await client.close();
+    } catch {
+      // Client creation may have failed; nothing to close.
+    }
   }
 
   /**
@@ -203,6 +211,6 @@ export class McpClientManager {
    */
   async closeAll(): Promise<void> {
     const ids = [...this.#clients.keys()];
-    await Promise.all(ids.map((id) => this.close(id)));
+    await Promise.allSettled(ids.map((id) => this.close(id)));
   }
 }

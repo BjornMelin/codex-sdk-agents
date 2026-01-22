@@ -30,5 +30,9 @@ export function isJsonObject(value: unknown): value is JsonObject {
   if (Array.isArray(value)) {
     return false;
   }
+  const proto = Object.getPrototypeOf(value);
+  if (proto !== null && proto !== Object.prototype) {
+    return false;
+  }
   return true;
 }

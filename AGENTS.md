@@ -56,11 +56,37 @@ This runs `pnpm -s fix`, `pnpm -s typecheck`, and `pnpm -s test`. Commit any cha
 
 Rules:
 
-- Biome: after autofix, no remaining diagnostics; do not ship `lint/correctness/` or `lint/complexity/`. No broad suppressions. `biome-ignore` only for a single line/block, with reason + link to issue or ADR/SPEC.
-- Promises: no floating promises. Handle with `await`, `return`, `.catch(...)`, or `.then(..., onRejected)`. In files importing/referencing `ai`, `@ai-sdk/*`, `@vercel/ai`, `openai`, `@openai/*`, avoid fire-and-forget; if you detach with `void`, add an adjacent comment and an explicit error surfacing path.
-- Tests: do not add test-only helpers/shims/mocks/branches to production source. Keep scaffolding in `tests/**` and test config.
-- TSDoc (TS/TSX): each changed/added export needs an immediately preceding `/** ... */` (no blank line). Summary: one sentence ending with `.`. Tags: allow only `@remarks @param @typeParam @returns @throws @example @see @deprecated` (in that order). `@param name - description`; no brace-typing (`@param {`, `@returns {`). If you add/modify `throw` inside an exported function, add `@throws` (one per exception type). For AI/RAG code (paths `/agents/` `/rag/` `/mcp/` `/codex/` or AI/RAG imports), each exported function/class also needs `@see` (ADR/SPEC path or official docs URL) or `@remarks` containing `ADR-` or `SPEC-`.
-- Characters: do not introduce Unicode em dash U+2014; use `--`. Detect with `rg -n --pcre2 "\\x{2014}" .`.
+- **Biome**:
+  - After autofix, no remaining diagnostics.
+  - Do not ship `lint/correctness/` or `lint/complexity/`.
+  - No broad suppressions.
+  - `biome-ignore` only for a single line/block, with reason + link to issue or ADR/SPEC.
+- **Promises**:
+  - No floating promises.
+  - Handle with `await`, `return`, `.catch(...)`, or `.then(..., onRejected)`.
+  - In files importing/referencing `ai`, `@ai-sdk/*`, `@vercel/ai`, `openai`,
+    `@openai/*`, avoid fire-and-forget; if you detach with `void`, add an
+    adjacent comment and an explicit error surfacing path.
+- **Tests**:
+  - Do not add test-only helpers/shims/mocks/branches to production source.
+  - Keep scaffolding in `tests/**` and test config.
+- **TSDoc (TS/TSX)**:
+  - Each changed/added export needs an immediately preceding `/** ... */`
+    (no blank line).
+  - Summary: one sentence ending with `.`.
+  - Tags: allow only `@remarks @param @typeParam @returns @throws @example @see
+    @deprecated` (in that order).
+  - `@param name - description`; no brace-typing (`@param {`, `@returns {`).
+  - If you add/modify `throw` inside an exported function, add `@throws` (one
+    per exception type).
+  - For AI/RAG code (paths `/agents/` `/rag/` `/mcp/` `/codex/` or AI/RAG
+    imports), each exported function/class also needs `@see` (ADR/SPEC path or
+    official docs URL) or `@remarks` containing `ADR-` or `SPEC-`.
+  - Tooling: run `pnpm lint:tsdoc` (ESLint with TSDoc/JSDoc rules) for syntax
+    and tag ordering; AI/RAG `@see`/`@remarks` checks remain manual.
+- **Characters**:
+  - Do not introduce Unicode em dash U+2014; use `--`.
+  - Detect with `rg -n --pcre2 "\\x{2014}" .`.
 
 ## Commits & PRs
 

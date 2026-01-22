@@ -39,7 +39,13 @@ function mergeRecord<V>(
   base: Record<string, V>,
   override: Partial<Record<string, V>>,
 ): Record<string, V> {
-  return { ...base, ...(override as Record<string, V>) };
+  const merged: Record<string, V> = { ...base };
+  for (const [key, value] of Object.entries(override)) {
+    if (value !== undefined) {
+      merged[key] = value;
+    }
+  }
+  return merged;
 }
 
 /**
@@ -82,11 +88,6 @@ export function mergeToolRoutingTable(
   return merged;
 }
 
-/**
- * Resolve an ordered list of MCP tool bundle IDs for a given workflow/role/step.
- *
- * Deny-by-default: if there is no explicit mapping, returns `[]`.
- */
 /**
  * Resolve bundle IDs for a workflow step, returning an empty list on misses.
  *

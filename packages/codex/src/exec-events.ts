@@ -142,14 +142,14 @@ type FileChangeKind = CodexFileChangedEvent["kind"];
 function normalizeFileChangeKind(kind: string | undefined): FileChangeKind {
   switch (kind) {
     case "add":
-      return "added";
     case "added":
+      return "added";
     case "update":
-      return "modified";
     case "modified":
+      return "modified";
     case "delete":
-      return "deleted";
     case "deleted":
+      return "deleted";
     case "renamed":
       return kind;
     default:

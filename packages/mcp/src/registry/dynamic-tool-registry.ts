@@ -207,7 +207,10 @@ export class DynamicToolRegistry {
       return cached;
     }
 
-    const promise = this.#resolveToolsUncached(bundleIds);
+    const promise = this.#resolveToolsUncached(bundleIds).catch((err) => {
+      this.#toolsCache.delete(key);
+      throw err;
+    });
     this.#toolsCache.set(key, promise);
     return promise;
   }

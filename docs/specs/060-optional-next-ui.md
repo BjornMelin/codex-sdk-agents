@@ -30,7 +30,10 @@ This spec is optional and should only be implemented after the CLI system is sta
 
 ### Server Actions and process spawn safety
 
-- `startRunAction(formData)` spawns `pnpm dev:cli -- run workflow ...` (dev only)
+- `startRunAction(formData)` should spawn the CLI locally. In development it
+  runs `pnpm dev:cli -- run workflow ...`; in production it should call a
+  built/installed CLI entrypoint (for example `codex-toolloop run workflow ...`)
+  or be disabled if the UI is distributed without a local CLI.
 - **Spawn requirements**:
   - Use argument arrays (no shell strings) for process spawn to prevent shell injection
   - Validate and allowlist workflow names and spec inputs before spawning
@@ -44,6 +47,35 @@ This spec is optional and should only be implemented after the CLI system is sta
   - Provide graceful shutdown: on server shutdown, signal all child processes to terminate and wait for cleanup
   - Avoid orphaned processes: poll process status periodically and mark as "orphaned" if process is gone but exit code is unknown
 - **Streaming**: Initial version can poll `~/.codex-toolloop/index.jsonl` and events.jsonl for updates; WebSocket/SSE streaming is optional.
+
+### ui-runs.jsonl schema
+
+Records are append-only JSON lines stored at `~/.codex-toolloop/ui-runs.jsonl`.
+Each record provides UI-level run tracking and references the canonical run
+artifacts by `runId`.
+
+Required fields:
+- `runId: string` -- run identifier, matches run directory name.
+- `pid: number` -- spawned process ID.
+- `startTime: string` -- ISO timestamp.
+- `status: "running" | "completed" | "failed" | "killed" | "orphaned"`.
+
+Optional fields:
+- `exitCode?: number`
+- `signal?: string`
+- `workflowId?: string`
+- `specId?: string`
+- `logPaths?: { stdout?: string; stderr?: string }`
+- `metadata?: Record<string, unknown>`
+
+Relationship to other files:
+- `ui-runs.jsonl` is UI-facing metadata only and references `runId`.
+- `~/.codex-toolloop/index.jsonl` remains the canonical run index; the UI should
+  reconcile state using `runId` and `meta.json` under each run directory.
+
+Versioning:
+- Include `schemaVersion?: number` in new records when fields change; maintain
+  backward-compatible readers.
 
 ## Security
 

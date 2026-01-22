@@ -255,6 +255,7 @@ export async function discoverMcpConfigPath(options: {
   configPath?: string;
   fileNames?: readonly string[];
 }): Promise<string | null> {
+  const maxSearchDepth = 100;
   if (options.configPath) {
     const explicit = resolveAgainstCwd(options.cwd, options.configPath);
     if (!(await pathExists(explicit))) {
@@ -279,7 +280,11 @@ export async function discoverMcpConfigPath(options: {
   const names = options.fileNames ?? DEFAULT_MCP_CONFIG_FILENAMES;
 
   let dir = options.cwd;
+  let depth = 0;
   while (true) {
+    if (depth++ > maxSearchDepth) {
+      return null;
+    }
     for (const name of names) {
       const candidate = join(dir, name);
       if (await pathExists(candidate)) {

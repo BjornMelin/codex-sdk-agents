@@ -13,8 +13,8 @@ import {
 const base = process.env.REVIEW_BASE;
 const head = process.env.REVIEW_HEAD;
 const diff = gitDiff({
-  ...(base !== undefined ? { base } : {}),
-  ...(head !== undefined ? { head } : {}),
+  ...(base ? { base } : {}),
+  ...(head ? { head } : {}),
 });
 
 if (diff.trim().length === 0) {
@@ -24,9 +24,7 @@ if (diff.trim().length === 0) {
 
 const prompt = buildCodeReviewPrompt({
   diff,
-  ...(process.env.REVIEW_FOCUS !== undefined
-    ? { extraFocus: process.env.REVIEW_FOCUS }
-    : {}),
+  ...(process.env.REVIEW_FOCUS ? { extraFocus: process.env.REVIEW_FOCUS } : {}),
 });
 
 const codex = createCodexFromEnv();

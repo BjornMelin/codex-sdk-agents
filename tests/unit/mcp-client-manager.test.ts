@@ -57,10 +57,9 @@ describe("McpClientManager", () => {
     const tools1: McpToolSet = {};
     const tools2: McpToolSet = {};
 
-    let call = 0;
-    vi.spyOn(Date, "now").mockImplementation(() => {
-      return call === 0 ? 0 : 60_001;
-    });
+    let now = 0;
+    let toolsCall = 0;
+    vi.spyOn(Date, "now").mockImplementation(() => now);
 
     const manager = new McpClientManager({
       servers: {
@@ -76,14 +75,15 @@ describe("McpClientManager", () => {
         return {
           ...client,
           tools: async () => {
-            call += 1;
-            return call === 1 ? tools1 : tools2;
+            toolsCall += 1;
+            return toolsCall === 1 ? tools1 : tools2;
           },
         } as McpClient;
       },
     });
 
     const first = await manager.getTools("repo");
+    now = 60_001;
     const second = await manager.getTools("repo");
 
     expect(first).toBe(tools1);
@@ -125,48 +125,48 @@ describe("McpClientManager", () => {
 
     expect(closed.sort()).toEqual(["a", "b"]);
   });
-});
 
-it("throws when authProviderId is set but no auth provider is configured", () => {
-  const server: McpServerConfig = {
-    id: "s",
-    trust: "trusted",
-    transport: {
-      type: "http",
-      url: "http://localhost:4010/mcp",
-      authProviderId: "missing",
-    },
-  };
+  it("throws when authProviderId is set but no auth provider is configured", () => {
+    const server: McpServerConfig = {
+      id: "s",
+      trust: "trusted",
+      transport: {
+        type: "http",
+        url: "http://localhost:4010/mcp",
+        authProviderId: "missing",
+      },
+    };
 
-  const manager = new McpClientManager({
-    servers: { s: server },
+    const manager = new McpClientManager({
+      servers: { s: server },
+    });
+
+    expect(() => manager.getClient("s")).toThrow(/Missing auth provider/);
   });
 
-  expect(() => manager.getClient("s")).toThrow(/Missing auth provider/);
-});
+  it("passes resolved auth provider into the client factory", async () => {
+    const provider = {} as unknown as OAuthClientProvider;
+    const factory = vi.fn<McpClientFactory>(async () => makeClient({}));
 
-it("passes resolved auth provider into the client factory", async () => {
-  const provider = {} as unknown as OAuthClientProvider;
-  const factory = vi.fn<McpClientFactory>(async () => makeClient({}));
+    const server: McpServerConfig = {
+      id: "s",
+      trust: "trusted",
+      transport: {
+        type: "http",
+        url: "http://localhost:4010/mcp",
+        authProviderId: "oauth",
+      },
+    };
 
-  const server: McpServerConfig = {
-    id: "s",
-    trust: "trusted",
-    transport: {
-      type: "http",
-      url: "http://localhost:4010/mcp",
-      authProviderId: "oauth",
-    },
-  };
+    const manager = new McpClientManager({
+      servers: { s: server },
+      authProvidersById: { oauth: provider },
+      factory,
+    });
 
-  const manager = new McpClientManager({
-    servers: { s: server },
-    authProvidersById: { oauth: provider },
-    factory,
+    await manager.getClient("s");
+
+    expect(factory).toHaveBeenCalledTimes(1);
+    expect(factory.mock.calls[0]?.[2]).toBe(provider);
   });
-
-  await manager.getClient("s");
-
-  expect(factory).toHaveBeenCalledTimes(1);
-  expect(factory.mock.calls[0]?.[2]).toBe(provider);
 });

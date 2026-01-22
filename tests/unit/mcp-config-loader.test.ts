@@ -183,8 +183,11 @@ describe("MCP config loading", () => {
       [MCP_CONFIG_ENV_PATH]: configPath,
     };
 
+    const subdir = join(dir, "subdir");
+    await mkdir(subdir, { recursive: true });
+
     const discovered = await discoverMcpConfigPath({
-      cwd: join(dir, "subdir"),
+      cwd: subdir,
       env,
     });
     expect(discovered).toBe(configPath);

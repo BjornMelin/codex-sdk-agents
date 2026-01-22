@@ -81,12 +81,12 @@ We implement the **OpenSSF Scorecard** action to assess the repository's securit
 
 ## 6. Code Quality & Linting (`.github/workflows/ci.yml`)
 
-A unified CI workflow enforces Biome and Typescript standards.
+A unified CI workflow enforces Biome and TypeScript standards.
 
 - **Jobs**:
   - `lint`: `pnpm biome ci .` (Errors on warnings, ensures formatting).
-  - `typecheck`: `pnpm typecheck` (Strict Typescript 5.x).
-  - `test`: `pnpm vitest run --coverage` (Ensures no regression).
+  - `typecheck`: `pnpm typecheck` (Strict TypeScript 5.x).
+  - `test`: `pnpm test` (Ensures no regression).
 - **Policy**: Passing CI is mandatory for all PRs.
 
 ## 7. Package Maintenance & Releases
@@ -104,7 +104,7 @@ A unified CI workflow enforces Biome and Typescript standards.
 | **Vulnerability Scanning** | CodeQL Extended + Dependabot Alerts | **+3.0** |
 | **Update Velocity** | Weekly Grouped Updates (pnpm optimized) | **+2.0** |
 | **Supply Chain** | Scorecard + Dependency Review | **+2.0** |
-| **Code Hygiene** | Biome Strict + Typescript | **+1.5** |
+| **Code Hygiene** | Biome Strict + TypeScript | **+1.5** |
 | **Repo Security** | Least Privilege Token + Branch Protection | **+1.0** |
 | **Total** | **9.5/10** | **Pass** |
 

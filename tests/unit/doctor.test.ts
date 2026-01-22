@@ -1,5 +1,7 @@
 import type { SpawnSyncReturns } from "node:child_process";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+const doctorCmdPath = "../../apps/cli/src/commands/doctor.js";
 
 vi.mock("node:child_process", () => ({
   spawnSync: vi.fn(),
@@ -29,6 +31,11 @@ function missingResult(message: string): SpawnSyncReturns<string> {
 }
 
 describe("runDoctor", () => {
+  beforeEach(() => {
+    vi.resetModules();
+    vi.clearAllMocks();
+  });
+
   it("returns 0 when all required binaries are present", async () => {
     const { spawnSync } = await import("node:child_process");
     const spawnSyncMock = vi.mocked(spawnSync);
@@ -40,7 +47,7 @@ describe("runDoctor", () => {
       return okResult(`${command} 1.0.0`);
     });
 
-    const { runDoctor } = await import("../../apps/cli/src/commands/doctor.js");
+    const { runDoctor } = await import(doctorCmdPath);
     const log = vi.spyOn(console, "log").mockImplementation(() => undefined);
 
     expect(runDoctor()).toBe(0);
@@ -63,7 +70,7 @@ describe("runDoctor", () => {
       return okResult(`${command} 1.0.0`);
     });
 
-    const { runDoctor } = await import("../../apps/cli/src/commands/doctor.js");
+    const { runDoctor } = await import(doctorCmdPath);
     const log = vi.spyOn(console, "log").mockImplementation(() => undefined);
 
     expect(runDoctor()).toBe(1);

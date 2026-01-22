@@ -79,6 +79,11 @@ export function buildCodexExecArgs(
 
   if (options.mcpServers) {
     for (const [serverId, cfg] of Object.entries(options.mcpServers)) {
+      if (!cfg.command && !cfg.url) {
+        console.warn(
+          `MCP server "${serverId}" has neither command nor url configured.`,
+        );
+      }
       const prefix = `mcp_servers.${serverId}.`;
       if (cfg.command) {
         configOverrides[`${prefix}command`] = cfg.command;
@@ -268,17 +273,22 @@ export class ExecBackend implements CodexBackend {
 
       let stdoutTail = "";
       let stderrTail = "";
+      let stderrChain = Promise.resolve();
 
       stderr.on("data", (chunk: Buffer) => {
         const text = chunk.toString("utf8");
         stderrTail = tail(`${stderrTail}${text}`, 8_000);
         if (onEvent) {
-          void emit({
-            type: "codex.exec.stderr",
-            backend: this.kind,
-            timestampMs: Date.now(),
-            line: text.trimEnd(),
-          });
+          stderrChain = stderrChain
+            .then(() =>
+              emit({
+                type: "codex.exec.stderr",
+                backend: this.kind,
+                timestampMs: Date.now(),
+                line: text.trimEnd(),
+              }),
+            )
+            .catch(() => undefined);
         }
       });
 
@@ -335,10 +345,27 @@ export class ExecBackend implements CodexBackend {
         }
       }
 
-      const exitCode: number = await new Promise((resolve, reject) => {
+      await stderrChain;
+
+      const exitResult = await new Promise<{
+        code: number | null;
+        signal: NodeJS.Signals | null;
+      }>((resolve, reject) => {
         child.on("error", (err) => reject(err));
-        child.on("close", (code) => resolve(code ?? 0));
+        child.on("close", (code, signal) => resolve({ code, signal }));
       });
+
+      if (exitResult.code === null) {
+        throw new CodexBackendError(
+          `codex exec terminated by signal ${exitResult.signal ?? "unknown"}`,
+          {
+            stderrTail,
+            stdoutTail,
+          },
+        );
+      }
+
+      const exitCode = exitResult.code;
 
       let structured: JsonValue | undefined;
       if (outputPath) {

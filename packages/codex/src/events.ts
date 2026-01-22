@@ -76,9 +76,9 @@ export type CodexToolCompletedEvent = CodexEventBase & {
   threadId?: string | undefined;
   turnId?: string | undefined;
   toolType: string;
-  toolName?: string;
-  durationMs?: number;
-  result?: JsonObject;
+  toolName?: string | undefined;
+  durationMs?: number | undefined;
+  result?: JsonObject | undefined;
 };
 
 /** Emitted when Codex reports a file change. */
@@ -119,6 +119,7 @@ export type CodexErrorEvent = CodexEventBase & {
   message: string;
   details?: JsonObject;
 };
+
 /** Normalized event union emitted across Codex backends. */
 export type CodexEvent =
   | CodexThreadStartedEvent

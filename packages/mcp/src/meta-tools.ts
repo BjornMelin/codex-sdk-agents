@@ -87,7 +87,7 @@ const callToolInputSchema = z.object({
  * @returns True if value is a non-null object.
  */
 function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null;
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 /**
@@ -243,9 +243,9 @@ function enforceServerAccess(
 function withTimeoutSignal(
   existing: unknown,
   timeoutMs: number,
-): { execOptions: unknown } {
+): { execOptions: unknown; clearTimeout: () => void } {
   if (timeoutMs <= 0) {
-    return { execOptions: existing };
+    return { execOptions: existing, clearTimeout: () => {} };
   }
 
   const signal =
@@ -254,7 +254,7 @@ function withTimeoutSignal(
       : undefined;
 
   const controller = new AbortController();
-  const timer = setTimeout(
+  const timerId = setTimeout(
     () => controller.abort(new Error("mcp.callTool timeout")),
     timeoutMs,
   );
@@ -265,7 +265,7 @@ function withTimeoutSignal(
   combined.addEventListener(
     "abort",
     () => {
-      clearTimeout(timer);
+      clearTimeout(timerId);
     },
     { once: true },
   );
@@ -274,7 +274,7 @@ function withTimeoutSignal(
     ? { ...existing, abortSignal: combined }
     : { abortSignal: combined };
 
-  return { execOptions };
+  return { execOptions, clearTimeout: () => clearTimeout(timerId) };
 }
 
 /**
@@ -399,12 +399,10 @@ export function createMcpMetaTools(
         };
       }
 
-      try {
-        const { execOptions: execOptionsWithTimeout } = withTimeoutSignal(
-          execOptions,
-          limits.callTimeoutMs,
-        );
+      const { execOptions: execOptionsWithTimeout, clearTimeout: clearTimer } =
+        withTimeoutSignal(execOptions, limits.callTimeoutMs);
 
+      try {
         const result = await exec(args, execOptionsWithTimeout);
 
         return {
@@ -414,6 +412,8 @@ export function createMcpMetaTools(
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         return { ok: false, error: message };
+      } finally {
+        clearTimer();
       }
     },
   });
