@@ -1,0 +1,14 @@
+{
+  "name": "@codex-toolloop/mcp",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@ai-sdk/mcp": "^1.0.9",
+    "ai": "^6.0.42",
+    "zod": "^4.3.5"
+  }
+}

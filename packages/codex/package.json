@@ -1,0 +1,15 @@
+{
+  "name": "@codex-toolloop/codex",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@openai/codex-sdk": "^0.87.0",
+    "ai": "^6.0.42",
+    "ai-sdk-provider-codex-app-server": "^1.1.7",
+    "zod": "^4.3.5"
+  }
+}
