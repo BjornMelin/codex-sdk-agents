@@ -23,11 +23,9 @@ We utilize the **dependabot-pnpm** grouping strategy to balance velocity and fre
 - **Groups**:
     1. `dev-dependencies`: All `development` dependencies grouped together.
         - *Rationale*: Low risk, high volume. Block only on build failure.
-    2. `prod-non-breaking`: Production dependencies, updates `patch` and `minor`.
+    2. `production-dependencies`: Production dependencies, updates `patch` and `minor`.
         - *Rationale*: Safe to group for semantic versioning compliant packages.
-    3. `prod-major`: Production dependencies, `major` updates.
-        - *Rationale*: High risk, kept separate or grouped in small batches if volume allows.
-- **Commit Message**: Prefix with `chore(deps):` or `fix(deps):` for conventional commits compliance.
+- **Commit Message**: Prefix with `chore(deps)` for production updates and `chore(deps-dev)` for development updates (conventional commits compliance).
 - **Insecure Dependencies**: Immediately raise PRs for known vulnerabilities (ignoring schedule).
 
 ```yaml

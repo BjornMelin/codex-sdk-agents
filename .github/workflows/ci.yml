@@ -1,10 +1,10 @@
 name: CI
 
-on:
+"on":
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   lint:
@@ -44,4 +44,4 @@ jobs:
           node-version-file: 'package.json'
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
-      - run: pnpm test -- --coverage
+      - run: pnpm test
