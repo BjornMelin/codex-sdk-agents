@@ -12,7 +12,9 @@ export function gitDiff(args: { base?: string; head?: string }): string {
     throw new Error(`Failed to run git diff: ${result.error.message}`);
   }
   if (result.status !== 0) {
-    throw new Error(`git diff failed (exit ${result.status}): ${result.stderr}`);
+    throw new Error(
+      `git diff failed (exit ${result.status}): ${result.stderr}`,
+    );
   }
 
   return result.stdout;

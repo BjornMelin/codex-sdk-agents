@@ -14,16 +14,30 @@ export type CreateCodexFromEnvOptions = {
  * @param options Options to customize the Codex instance.
  * @returns A Codex instance.
  */
-export function createCodexFromEnv(options: CreateCodexFromEnvOptions = {}): Codex {
+export function createCodexFromEnv(
+  options: CreateCodexFromEnvOptions = {},
+): Codex {
   const baseUrlEnvVar = options.baseUrlEnvVar ?? "OPENAI_BASE_URL";
   const apiKeyEnvVar = options.apiKeyEnvVar ?? "CODEX_API_KEY";
 
   const baseUrl = process.env[baseUrlEnvVar];
   const apiKey = process.env[apiKeyEnvVar] ?? process.env.OPENAI_API_KEY;
 
-  return new Codex({
-    codexPathOverride: options.codexPathOverride,
-    baseUrl,
-    apiKey,
-  });
+  const config: {
+    codexPathOverride?: string;
+    baseUrl?: string;
+    apiKey?: string;
+  } = {};
+
+  if (options.codexPathOverride !== undefined) {
+    config.codexPathOverride = options.codexPathOverride;
+  }
+  if (baseUrl !== undefined) {
+    config.baseUrl = baseUrl;
+  }
+  if (apiKey !== undefined) {
+    config.apiKey = apiKey;
+  }
+
+  return new Codex(config);
 }

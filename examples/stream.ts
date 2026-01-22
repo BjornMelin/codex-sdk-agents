@@ -1,4 +1,8 @@
+/**
+ * Example of streaming events from a Codex thread.
+ */
 import type { ThreadEvent } from "@openai/codex-sdk";
+
 import { createCodexFromEnv } from "../src/lib/create-codex-from-env.js";
 
 const codex = createCodexFromEnv();
@@ -8,12 +12,18 @@ const thread = codex.startThread({
   approvalPolicy: "never",
 });
 
-const { events } = await thread.runStreamed("List the key files and what they are for.");
+const { events } = await thread.runStreamed(
+  "List the key files and what they are for.",
+);
 
 for await (const event of events) {
   logEvent(event);
 }
 
+/**
+ * Logs a thread event to the console.
+ * @param event - The thread event to log.
+ */
 function logEvent(event: ThreadEvent) {
   switch (event.type) {
     case "thread.started":
