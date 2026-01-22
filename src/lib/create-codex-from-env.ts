@@ -32,8 +32,9 @@ export function createCodexFromEnv(
     apiKey?: string;
   } = {};
 
-  if (options.codexPathOverride !== undefined) {
-    config.codexPathOverride = options.codexPathOverride;
+  const codexPathOverride = options.codexPathOverride?.trim() || undefined;
+  if (codexPathOverride) {
+    config.codexPathOverride = codexPathOverride;
   }
   if (baseUrl) {
     config.baseUrl = baseUrl;

@@ -109,7 +109,7 @@ function truncateString(value: string, maxChars: number): string {
  *
  * @param value - Value to serialize.
  * @param maxChars - Maximum allowed JSON characters.
- * @returns Parsed JSON object, or truncation/error metadata.
+ * @returns Original value if serializable and within limit, or truncation/error metadata.
  */
 function safeJsonWithLimit(value: unknown, maxChars: number): unknown {
   if (value === undefined) {
@@ -119,7 +119,7 @@ function safeJsonWithLimit(value: unknown, maxChars: number): unknown {
   try {
     const json = JSON.stringify(value);
     if (json.length <= maxChars) {
-      return JSON.parse(json) as unknown;
+      return value;
     }
     return {
       note: "truncated",

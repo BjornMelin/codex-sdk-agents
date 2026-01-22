@@ -135,7 +135,7 @@ export class McpClientManager {
    * @param serverId - ID of the MCP server.
    * @returns Promise resolving to the MCP client.
    */
-  getClient(serverId: string): Promise<McpClient> {
+  async getClient(serverId: string): Promise<McpClient> {
     const existing = this.#clients.get(serverId);
     if (existing) {
       return existing.clientPromise;

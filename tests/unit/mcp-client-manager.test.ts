@@ -126,7 +126,7 @@ describe("McpClientManager", () => {
     expect(closed.sort()).toEqual(["a", "b"]);
   });
 
-  it("throws when authProviderId is set but no auth provider is configured", () => {
+  it("throws when authProviderId is set but no auth provider is configured", async () => {
     const server: McpServerConfig = {
       id: "s",
       trust: "trusted",
@@ -141,7 +141,9 @@ describe("McpClientManager", () => {
       servers: { s: server },
     });
 
-    expect(() => manager.getClient("s")).toThrow(/Missing auth provider/);
+    await expect(manager.getClient("s")).rejects.toThrow(
+      /Missing auth provider/,
+    );
   });
 
   it("passes resolved auth provider into the client factory", async () => {

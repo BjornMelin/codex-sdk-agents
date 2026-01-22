@@ -144,7 +144,20 @@ export class SdkBackend implements CodexBackend {
       if (!onEvent) {
         return;
       }
-      await onEvent(event);
+      try {
+        await onEvent(event);
+      } catch (error) {
+        const details = {
+          threadId,
+          turnId,
+          eventType: event.type,
+        };
+        console.error(
+          "Codex SDK event handler failed; continuing stream.",
+          details,
+          error,
+        );
+      }
     };
 
     let lastText = "";
