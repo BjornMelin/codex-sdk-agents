@@ -31,6 +31,15 @@ pnpm test:watch
 pnpm examples:basic
 ```
 
+## Turborepo (Vercel)
+
+- Use `turbo build` on Vercel (filters inferred by root).
+- Ensure `turbo.json` defines `pipeline.build.outputs` for each framework output dir.
+  - Next.js: `[".next/**", "!.next/cache/**"]`
+- Never include `.next/cache/**` in outputs.
+- Declare task `env` and `globalEnv` in `turbo.json` to avoid stale cache hits.
+- Validate remote caching locally with `turbo run build` and inspect `node_modules/.cache/turbo`.
+
 ## Coding Style & Naming Conventions
 
 - TypeScript ESM (NodeNext), `strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`.

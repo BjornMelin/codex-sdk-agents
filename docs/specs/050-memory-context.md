@@ -38,6 +38,22 @@ Repo identity:
   - hash of canonical workspace path + git remote URL (if present) + current branch name
   - if remote not present, path-only hash
 
+**Branch-scoping and edge case handling:**
+
+- **Memory scope:** Memories are **branch-scoped**. Each branch maintains its own memory store at `~/.codex-toolloop/repos/<repoHash>/` where repoHash includes the branch name. This prevents workflows on different branches from polluting each other's context.
+- **Branch renames and deletions:** When a branch is renamed or deleted:
+  - The old memory store persists under the old branch-namespaced repoHash.
+  - Tools should support an optional migration/deduplication policy: preserve old memories by copying them to the new branch's store, or leave as-is for audit purposes.
+  - Recommend documenting this as a user-initiated operation rather than automatic.
+- **Detached HEAD states:** When the repository is in a detached HEAD state:
+  - Treat the branch name as optional and fall back to the commit hash (SHA-1) in the repoHash computation.
+  - This prevents memory loss during detached HEAD operations (e.g., CI bisect or rebase workflows).
+  - Example: `repoHash = hash(path + remoteUrl + sha)` instead of `hash(path + remoteUrl + branchName)`.
+- **Remote-less repositories:** Repos without a configured remote (rare but possible in CI or standalone clones):
+  - Use path-only hashing: `repoHash = hash(path)` or `hash(path + currentBranchName)`.
+  - Document the limitation that path-based memories cannot be shared across machine clones (no cross-machine memory transfer).
+- **Configurable policy:** Allow configuration to override branch-scoping behavior (e.g., share memories across all branches via a shared `<repoHash>` without branch component). This can be set in config for teams that prefer unified team memory.
+
 ## Memory data model
 
 Define schemas:

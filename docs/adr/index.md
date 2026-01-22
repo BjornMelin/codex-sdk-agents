@@ -15,6 +15,7 @@ This directory contains records of significant architecture decisions made for t
 | 0007 | [JSONL-first observability with normalized events](0007-observability.md) | Accepted |
 | 0008 | [Layered safety controls (Codex approvals + sandbox + tool allowlists)](0008-security.md) | Accepted |
 | 0009 | [Dynamic tool loading and MCP server routing (minimize context bloat)](0009-dynamic-tool-loading.md) | Accepted |
+| 0010 | [Standardize Turborepo configuration for the monorepo](0010-turborepo-monorepo.md) | Accepted |
 
 ---
 

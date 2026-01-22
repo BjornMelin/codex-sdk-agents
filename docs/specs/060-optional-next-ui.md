@@ -47,7 +47,14 @@ This spec is optional and should only be implemented after the CLI system is sta
 
 ## Security
 
-- UI is local only.
+- **UI is local only:** The UI server must be bound exclusively to the loopback interface and must reject all non-local connections.
+  - **Technical controls:**
+    - Bind the HTTP server to `127.0.0.1:PORT` (never to `0.0.0.0` or other network interfaces).
+    - Enforce CORS policy: reject all requests with an `Origin` header that does not resolve to `127.0.0.1` or `localhost`.
+    - Reject connections from non-loopback IP addresses at the socket level (check `req.socket.remoteAddress`).
+    - Return HTTP 403 Forbidden for any request originating from a non-loopback address.
+    - Document these enforcement points in the server startup logs for debugging.
+  - **Rationale:** Prevents accidental or malicious network exposure of local run artifacts and sensitive data.
 - Do not expose secrets.
 - Read-only by default.
 

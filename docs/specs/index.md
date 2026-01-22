@@ -14,6 +14,7 @@ This directory contains the implementation specifications for the project. These
 | 040 | [Codex ToolLoop CLI (commands, streaming UX, sessions, run artifacts)](040-cli.md) |
 | 050 | [Memory, context packs, and cross-run knowledge](050-memory-context.md) |
 | 060 | [(Optional): Local Next.js UI for monitoring runs and browsing artifacts](060-optional-next-ui.md) |
+| 080 | [Turborepo monorepo configuration (Vercel-ready)](080-turborepo-monorepo.md) |
 
 ---
 
