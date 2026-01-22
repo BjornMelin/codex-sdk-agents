@@ -67,8 +67,10 @@ Repo identity:
       - Remove trailing slashes
       - Example SCP: `git@github.com:owner/repo.git` → `ssh://github.com/owner/repo`
       - Example ssh://: `ssh://user@github.com:22/owner/repo.git?foo=bar` → `ssh://github.com/owner/repo`
-  - Hash the canonical path + sanitized remote URL + current branch name
-  - if remote not present, hash canonical path + current branch name only
+  - Hash the canonical path + sanitized remote URL + current branch name.
+  - If remote is not present, hash canonical path + current branch name only.
+  - If no branch name is available (e.g., no HEAD), fall back to path-only
+    hashing.
 
 **Branch-scoping and edge case handling:**
 
@@ -78,12 +80,20 @@ Repo identity:
   - Tools should support an optional migration/deduplication policy: preserve old memories by copying them to the new branch's store, or leave as-is for audit purposes.
   - Recommend documenting this as a user-initiated operation rather than automatic.
 - **Detached HEAD states:** When the repository is in a detached HEAD state:
-  - Treat the branch name as optional and fall back to the commit hash (SHA-1) in the repoHash computation.
-  - This prevents memory loss during detached HEAD operations (e.g., CI bisect or rebase workflows).
-  - Example: `repoHash = hash(path + remoteUrl + sha)` instead of `hash(path + remoteUrl + branchName)`.
-- **Remote-less repositories:** Repos without a configured remote (rare but possible in CI or standalone clones):
-  - Use path-only hashing: `repoHash = hash(path)` or `hash(path + currentBranchName)`.
-  - Document the limitation that path-based memories cannot be shared across machine clones (no cross-machine memory transfer).
+  - Treat the branch name as optional and fall back to the commit hash (SHA-1)
+    in the repoHash computation.
+  - This prevents memory loss during detached HEAD operations (e.g., CI bisect
+    or rebase workflows).
+  - Example: `repoHash = hash(path + remoteUrl + sha)` instead of
+    `hash(path + remoteUrl + branchName)`.
+- **Remote-less repositories:** Repos without a configured remote (rare but
+  possible in CI or standalone clones):
+  - If a branch name exists, use `repoHash = hash(path + branchName)` to retain
+    branch-scoped memories.
+  - Only fall back to `repoHash = hash(path)` when no branch name is available
+    (e.g., no HEAD).
+  - Path-only hashing cannot be shared across machine clones; document this
+    limitation explicitly.
 - **Configurable branch-scoping policy:**
   - **Config key:** `memory.branchScope`
   - **Allowed values:** `"perBranch"` (default) | `"sharedRepo"`
@@ -221,28 +231,29 @@ Implement a **RedactionPipeline** with the following ordered stages to prevent s
      - Bearer tokens: `(?i)bearer\s+[a-zA-Z0-9\._\-]+` (matches `bearer ghp_abc123`)
      - AWS keys: `(?i)(AKIA|ASIA)[0-9A-Z]{16}` (AWS access key ID format)
      - Generic API key pattern: `(?i)api[_-]?key\s*[:=]\s*[a-zA-Z0-9\-_]{20,}` (matches `api_key: secret123abc...`)
-   - **UUIDs and tokens**:
-     - UUID pattern: `[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}` (including versions)
-   - **Email addresses**:
-     - Email pattern: `[a-zA-Z0-9._%\-+]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}`
-   - **Private keys**:
-     - PEM private key: `-----BEGIN.*PRIVATE KEY-----` ... `-----END.*PRIVATE KEY-----` (multiline)
-     - Base64-like key blocks: `[A-Za-z0-9+/]{40,}={0,2}` (if preceded by key-like labels)
 
-3. **Environment variable name lookups** (using provided env names list):
+- **UUIDs and tokens**:
+  - UUID pattern: `[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}` (including versions)
+- **Email addresses**:
+  - Email pattern: `[a-zA-Z0-9._%\-+]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}`
+- **Private keys**:
+  - PEM private key: `-----BEGIN.*PRIVATE KEY-----` ... `-----END.*PRIVATE KEY-----` (multiline)
+  - Base64-like key blocks: `[A-Za-z0-9+/]{40,}={0,2}` (if preceded by key-like labels)
+
+1. **Environment variable name lookups** (using provided env names list):
    - Match known sensitive variable patterns: `PASSWORD`, `SECRET`, `TOKEN`, `KEY`, `API_KEY`, `AWS_`, `GITHUB_`, `OPENAI_`, etc.
    - If an env var name is in the sensitive list and its value appears in the text, mask the value
 
-4. **Optional user-supplied patterns** (from config):
+2. **Optional user-supplied patterns** (from config):
    - Apply custom regex rules from `redaction.customPatterns` config array
    - Each custom pattern: `{ regex: string, name?: string }` (name used in masking output)
 
-5. **Token replacement strategy**:
+3. **Token replacement strategy**:
    - Default masking format: `[REDACTED:<pattern-name>]` (e.g., `[REDACTED:api_key]`, `[REDACTED:uuid]`)
    - Preserve length option (configurable): if enabled, replace with same number of asterisks (e.g., `ghp_abc123` → `****** (6 chars)`)
    - Log redaction events to audit trail (optional; disabled by default) with pattern name and occurrence count
 
-6. **Error handling**:
+4. **Error handling**:
    - If a custom regex is invalid (compilation fails), log a warning and skip that pattern; do not fail the redaction pipeline
    - If redaction regex matching fails due to timeout (very large text), fall back to simpler substring-based patterns
    - Document any failures in a warning log with context (line number in memory.json or summaries.jsonl)

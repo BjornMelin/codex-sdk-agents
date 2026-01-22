@@ -314,7 +314,7 @@ export function createThreadEventMapper(
 
       case "item.updated": {
         const item = event.item;
-        if (!item || !item.text) {
+        if (!item || item.text == null) {
           break;
         }
 
@@ -363,7 +363,8 @@ export function createThreadEventMapper(
           item.type === "agent_message" || item.type === "assistant_message";
         if (isAgentMessage) {
           const itemId = item.id ?? "__agent__";
-          const text = item.text ?? lastAgentText;
+          const cachedText = itemTextById.get(itemId);
+          const text = cachedText ?? item.text ?? lastAgentText;
           lastAgentText = text;
 
           const e: CodexMessageCompletedEvent = {

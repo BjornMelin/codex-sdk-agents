@@ -58,10 +58,10 @@ Baseline configuration:
       "persistent": true,
       "interactive": true
     },
-    "//#lint": { "outputs": [] },
+    "//#lint": { "cache": false, "outputs": [] },
     "//#fix": { "cache": false },
     "//#test": { "cache": false, "outputs": ["coverage/**"] },
-    "//#typecheck": { "outputs": [] }
+    "//#typecheck": { "cache": false, "outputs": [] }
   }
 }
 ```
