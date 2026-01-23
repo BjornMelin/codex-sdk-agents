@@ -50,7 +50,7 @@ const mcpStdioTransportSchema = z.strictObject({
   cwd: z.string().min(1).optional(),
   env: z.record(z.string(), z.string()).optional(),
   stderr: z
-    .union([z.enum(["inherit", "pipe", "ignore"]), z.number().int()])
+    .union([z.enum(["inherit", "pipe", "ignore"]), z.number().int().min(0)])
     .optional(),
 });
 
@@ -59,7 +59,7 @@ const mcpStdioTransportSchema = z.strictObject({
  *
  * @see docs/specs/010-mcp-platform.md
  */
-export const mcpTransportSchema = z.union([
+export const mcpTransportSchema = z.discriminatedUnion("type", [
   mcpHttpTransportSchema,
   mcpSseTransportSchema,
   mcpStdioTransportSchema,

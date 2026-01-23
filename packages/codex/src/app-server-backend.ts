@@ -221,6 +221,9 @@ export class AppServerBackend implements CodexBackend {
       const started = await client.threadStart(threadStartParams);
 
       this.threadId = started.thread.id;
+      if (!this.threadId) {
+        throw new CodexBackendError("App-server returned an empty thread id.");
+      }
       mapper.setThreadId(this.threadId);
     } else if (recreateClient) {
       const resumeParams: v2.ThreadResumeParams = {
@@ -238,8 +241,14 @@ export class AppServerBackend implements CodexBackend {
       };
       const resumed = await client.threadResume(resumeParams);
       this.threadId = resumed.thread.id;
+      if (!this.threadId) {
+        throw new CodexBackendError("App-server returned an empty thread id.");
+      }
       mapper.setThreadId(this.threadId);
     } else {
+      if (!this.threadId) {
+        throw new CodexBackendError("App-server thread id is unavailable.");
+      }
       mapper.setThreadId(this.threadId);
     }
 

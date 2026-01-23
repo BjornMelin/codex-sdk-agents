@@ -162,7 +162,13 @@ export class CodexAppServerProcess {
     params: unknown,
   ): Promise<TResponse> {
     await this.ensureStarted();
+    return await this.requestInternal(method, params);
+  }
 
+  private async requestInternal<TResponse>(
+    method: string,
+    params: unknown,
+  ): Promise<TResponse> {
     const requestId = this.nextRequestId++;
     const request: JsonRpcRequest = {
       id: requestId,
@@ -280,7 +286,7 @@ export class CodexAppServerProcess {
       },
     };
 
-    const init = await this.request<InitializeResponse>(
+    const init = await this.requestInternal<InitializeResponse>(
       "initialize",
       initParams,
     );

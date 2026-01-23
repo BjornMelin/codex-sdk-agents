@@ -185,6 +185,11 @@ export class SdkBackend implements CodexBackend {
       });
     }
 
+    const thread = this.thread;
+    if (!thread) {
+      throw new CodexBackendError("Codex SDK thread is not initialized.");
+    }
+
     const mapper = createThreadEventMapper(this.kind);
 
     const emit = async (event: CodexEvent) => {
@@ -243,7 +248,7 @@ export class SdkBackend implements CodexBackend {
       ...(options.signal !== undefined ? { signal: options.signal } : {}),
     };
 
-    const { events } = await this.thread.runStreamed(toSdkInput(), turnOptions);
+    const { events } = await thread.runStreamed(toSdkInput(), turnOptions);
 
     for await (const raw of events) {
       const parsed = parseThreadEventLike(raw);

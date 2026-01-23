@@ -73,7 +73,7 @@ function rewriteSpecifier(filePath, spec) {
  */
 function rewriteSpecifiers(filePath, content) {
   return content.replaceAll(
-    /(from\s+["'])(\.[^"']+)(["'])/g,
+    /((?:export\s+[^;]*?\s+from|from)\s+["'])(\.[^"']+)(["'])/g,
     (_full, prefix, spec, suffix) =>
       `${prefix}${rewriteSpecifier(filePath, spec)}${suffix}`,
   );

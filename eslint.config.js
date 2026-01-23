@@ -4,6 +4,9 @@ import jsdocPlugin from "eslint-plugin-jsdoc";
 import tsdoc from "eslint-plugin-tsdoc";
 
 const allowedTags = [
+  "ai",
+  "codex",
+  "openai",
   "remarks",
   "param",
   "typeParam",
@@ -23,6 +26,7 @@ export default defineConfig([
     "opensrc/**",
     "packages/codex-app-server-protocol/src/generated/**",
     "tools/codex-schemas/**",
+    "tools/.trash/**",
   ]),
   {
     files: ["**/*.ts", "**/*.tsx"],
