@@ -132,5 +132,6 @@ Turborepo config reference: https://turborepo.dev/schema.json
 Turborepo env hashing: https://github.com/vercel/turborepo/blob/main/docs/site/content/docs/crafting-your-repository/using-environment-variables.mdx
 Turborepo Biome guide: https://turbo.build/repo/docs/guides/tools/biome
 Turborepo config (tasks vs pipeline): https://turborepo.dev/docs/reference/configuration
-Vercel remote cache signature: https://vercel.com/docs/integrations/ecommerce/bigcommerce
+Vercel remote caching: https://turbo.build/repo/docs/core-concepts/remote-caching
+Turborepo remote cache signature: https://vercel.com/docs/monorepos/turborepo/caching
 ```
