@@ -9,8 +9,9 @@ This directory contains the implementation specifications for the project. These
 | 000 | [Bootstrap the Codex ToolLoop monorepo (Node v24 LTS + pnpm + TS strict + Zod v4.3.6 + Vitest)](000-bootstrap-monorepo.md) |
 | 010 | [MCP platform (first-party MCP servers + client manager + dynamic tool registry)](010-mcp-platform.md) |
 | 011 | [Dynamic tool loading (dynamicTool + on-demand MCP server tooling)](011-dynamic-tool-loading.md) |
-| 020 | [Codex backends (AI SDK app-server default + exec JSONL + optional TS SDK)](020-codex-backends.md) |
+| 020 | [Codex backends (app-server JSONL + exec JSONL + optional TS SDK)](020-codex-backends.md) |
 | 021 | [SDK backend option fidelity](021-sdk-backend-option-fidelity.md) |
+| 022 | [Codex app-server protocol schemas and upgrade workflow](022-codex-app-server-schemas.md) |
 | 030 | [Agent runtime and workflow engine (multi-agent, typed handoffs, context packs)](030-agent-runtime.md) |
 | 040 | [Codex ToolLoop CLI (commands, streaming UX, sessions, run artifacts)](040-cli.md) |
 | 050 | [Memory, context packs, and cross-run knowledge](050-memory-context.md) |

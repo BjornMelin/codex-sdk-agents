@@ -91,11 +91,11 @@ Codex ToolLoop chooses the backend per workflow:
 
 ## Amendments
 
-### 2026-01-21 — Codex backend v1 implemented
+### 2026-01-21 -- Codex backend v1 implemented
 
 This ADR is implemented end-to-end via SPEC 020 (`packages/codex`).
 
-- **Default backend remains app-server** using the AI SDK community provider `ai-sdk-provider-codex-app-server`, which exposes a session API (`injectMessage`, `interrupt`) and per-call options (e.g., `threadMode`, `reasoningEffort`).
+- **Default backend remains app-server**. The initial v1 implementation used the AI SDK community provider `ai-sdk-provider-codex-app-server` and exposed a session API (`injectMessage`, `interrupt`) plus per-call options.
 - **Exec backend** uses `codex exec --json` for streaming JSONL events and supports deterministic structured outputs via `--output-schema` + `--output-last-message`.
 - **MCP server configuration** can be passed to Codex both via app-server provider settings and via Codex CLI config overrides (`--config key=value`) for the exec backend.
 
@@ -108,3 +108,17 @@ References:
 - AI SDK codex app-server provider: <https://ai-sdk.dev/providers/community-providers/codex-app-server#codex-cli-app-server-provider>
 - Codex CLI reference: <https://developers.openai.com/codex/cli/reference/>
 - Codex config reference: <https://developers.openai.com/codex/config>
+
+### 2026-01-23 -- App-server backend migrated to internal schema-driven client
+
+The app-server backend no longer relies on the AI SDK community provider.
+
+- **Default backend remains app-server**, but is now implemented as a schema-driven JSONL-over-stdio client for `codex app-server`.
+- **Runtime safety improved**: protocol envelopes and key messages are validated with Ajv against the committed JSON Schema bundle.
+- **Mid-execution injection removed**: the backend API no longer supports `inject()` for app-server v2 in this repo; interruption is supported via `turn/interrupt`.
+
+References:
+
+- Codex app-server docs: <https://developers.openai.com/codex/app-server/>
+- ADR 0012: Schema artifacts policy -- `docs/adr/0012-codex-app-server-schema-artifacts.md`
+- SPEC 022: Schema workflow -- `docs/specs/022-codex-app-server-schemas.md`

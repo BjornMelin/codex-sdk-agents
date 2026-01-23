@@ -67,33 +67,29 @@ Repo identity:
       - Remove trailing slashes
       - Example SCP: `git@github.com:owner/repo.git` → `ssh://github.com/owner/repo`
       - Example ssh://: `ssh://user@github.com:22/owner/repo.git?foo=bar` → `ssh://github.com/owner/repo`
-  - Hash the canonical path + sanitized remote URL + current branch name.
-  - If remote is not present, hash canonical path + current branch name only.
-  - If no branch name is available (e.g., no HEAD), fall back to path-only
-    hashing.
+  - **Core rule:** Hash the canonical path + current branch name. This is **required** to preserve branch-scoped memories.
+    - If a remote is present: `repoHash = hash(path + remoteUrl + branchName)`
+    - If no remote: `repoHash = hash(path + branchName)`
+  - **Detached HEAD fallback:** When HEAD is detached (e.g., CI bisect, rebase operations), replace branch name with the current commit SHA:
+    - If a remote is present: `repoHash = hash(path + remoteUrl + sha)`
+    - If no remote: `repoHash = hash(path + sha)`
+  - **Last-resort fallback (no branch, no HEAD):** Only when both branch name and commit SHA are unavailable (extremely rare edge case, e.g., empty repository with no commits), fall back to path-only hashing: `repoHash = hash(path)`. This fallback **cannot be shared across machine clones**; each machine will compute a different repoHash and maintain separate memories.
 
 **Branch-scoping and edge case handling:**
 
-- **Memory scope:** Memories are **branch-scoped**. Each branch maintains its own memory store at `~/.codex-toolloop/repos/<repoHash>/` where repoHash includes the branch name. This prevents workflows on different branches from polluting each other's context.
+- **Memory scope:** Memories are **branch-scoped**. Each branch (or detached HEAD commit) maintains its own memory store at `~/.codex-toolloop/repos/<repoHash>/` where repoHash includes the branch name or commit SHA. This prevents workflows on different branches from polluting each other's context.
 - **Branch renames and deletions:** When a branch is renamed or deleted:
   - The old memory store persists under the old branch-namespaced repoHash.
   - Tools should support an optional migration/deduplication policy: preserve old memories by copying them to the new branch's store, or leave as-is for audit purposes.
   - Recommend documenting this as a user-initiated operation rather than automatic.
 - **Detached HEAD states:** When the repository is in a detached HEAD state:
-  - Treat the branch name as optional and fall back to the commit hash (SHA-1)
-    in the repoHash computation.
-  - This prevents memory loss during detached HEAD operations (e.g., CI bisect
-    or rebase workflows).
-  - Example: `repoHash = hash(path + remoteUrl + sha)` instead of
-    `hash(path + remoteUrl + branchName)`.
-- **Remote-less repositories:** Repos without a configured remote (rare but
-  possible in CI or standalone clones):
-  - If a branch name exists, use `repoHash = hash(path + branchName)` to retain
-    branch-scoped memories.
-  - Only fall back to `repoHash = hash(path)` when no branch name is available
-    (e.g., no HEAD).
-  - Path-only hashing cannot be shared across machine clones; document this
-    limitation explicitly.
+  - Include the current commit SHA in the repoHash computation instead of a branch name.
+  - This prevents memory loss during detached HEAD operations (e.g., CI bisect, rebase workflows, or checkout to specific commits).
+  - Example: `repoHash = hash(path + remoteUrl + sha)` (with remote) or `repoHash = hash(path + sha)` (without remote).
+- **Remote-less repositories:** Repos without a configured remote (rare but possible in CI or standalone clones):
+  - **If a branch name exists**, MUST use `repoHash = hash(path + branchName)` to retain branch-scoped memories. Do not omit the branch name.
+  - **If HEAD is detached** (no branch name), use `repoHash = hash(path + sha)` to preserve per-commit memories.
+  - **Only as an absolute last resort** (no branch name, no HEAD), fall back to `repoHash = hash(path)`. **Note:** Path-only hashing is **not portable** across machine clones; each clone will compute a different repoHash and maintain separate memory stores. Document this limitation when deploying to multi-machine CI environments.
 - **Configurable branch-scoping policy:**
   - **Config key:** `memory.branchScope`
   - **Allowed values:** `"perBranch"` (default) | `"sharedRepo"`

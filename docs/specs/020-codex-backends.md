@@ -1,4 +1,4 @@
-# SPEC 020 — Codex backends (v1)
+# SPEC 020 -- Codex backends (v1)
 
 Status: **Completed** (2026-01-21)
 
@@ -6,7 +6,7 @@ Status: **Completed** (2026-01-21)
 
 Provide a strict, testable, and backend-agnostic interface for running Codex in three modes:
 
-- **App-server backend** (default/recommended): AI SDK community provider `ai-sdk-provider-codex-app-server`.
+- **App-server backend** (default/recommended): internal JSONL-over-stdio client for `codex app-server` (schema-driven).
 - **Exec backend** (fallback / deterministic CI-friendly mode): `codex exec --json` JSONL stream parsing.
 - **SDK backend** (optional): `@openai/codex-sdk` (used when direct SDK control is required).
 
@@ -24,6 +24,7 @@ The interface normalizes streaming events and returns a final result (`text` plu
 - Implementing MCP registry/routing logic (covered by SPEC 010/011).
 - Running real Codex CLI in tests (tests must use mocks/stubs).
 - Implementing structured output for app-server / SDK backends (v1 structured output is guaranteed for exec backend).
+  - Note: app-server supports `outputSchema` at the protocol level, but this repo's v1 backend API does not expose it yet.
 
 ## Public API
 
@@ -135,7 +136,7 @@ export type CodexEvent =
 Notes:
 
 - **Exec backend** normalizes Codex JSONL events emitted by `codex exec --json` (thread/turn/item lifecycle).
-- **App-server backend** maps AI SDK `streamText().fullStream` parts (at minimum, text deltas) to normalized message events.
+- **App-server backend** maps `codex app-server` notifications (at minimum, `item/agentMessage/delta`) to normalized message events.
 
 ### Backend interface
 
@@ -155,11 +156,15 @@ export interface CodexBackend {
 
 ### App-server backend
 
-- Implemented using `createCodexAppServer` provider and `streamText`.
-- Supports `threadMode: persistent | stateless` and `reasoningEffort: none | low | medium | high` (provider contract).
+- Implemented via an internal JSONL-over-stdio client (`codex app-server`) and a schema-driven validator layer.
+- Uses committed protocol artifacts:
+  - `packages/codex-app-server-schema/ts/` for types
+  - `packages/codex-app-server-schema/json-schema/` for runtime validation (Ajv)
+- Supports `threadMode: persistent | stateless`.
+- Supports `reasoningEffort` by mapping it into the thread's `config` overrides (`model_reasoning_effort`).
 - Exposes mid-execution controls:
-  - `inject(content)` delegates to `session.injectMessage(content)` (provider session API).
-  - `interrupt()` delegates to `session.interrupt()` (provider session API).
+  - `interrupt()` delegates to `turn/interrupt` for the active `(threadId, turnId)`.
+  - `inject(content)` is not supported by app-server v2 in this repo's backend API.
 
 ### Exec backend
 
@@ -188,7 +193,7 @@ export interface CodexBackend {
   - Never execute any content from events as code.
 - Never persist secrets in artifacts:
   - Do not write merged `process.env` to disk.
-  - `mcpServers.env` and headers should be passed only to subprocess/provider.
+  - `mcpServers.env` and headers should be passed only to subprocesses.
 - Enforce timeouts and abort handling for exec backend:
   - `timeoutMs` kills the subprocess (best effort) and emits `codex.error`.
 
@@ -212,14 +217,18 @@ export interface CodexBackend {
 - Primary implementation: `packages/codex/src/**`
   - `exec-events.ts` implements JSONL-to-normalized event mapping shared by exec and SDK backends.
   - `exec-backend.ts` implements `codex exec --json` subprocess runner plus output schema support.
-  - `app-server-backend.ts` wraps AI SDK app-server provider and exposes `inject`/`interrupt`.
+  - `app-server/process.ts` implements the JSONL-over-stdio `codex app-server` process manager.
+  - `app-server/schema.ts` loads and compiles Ajv validators from committed app-server JSON schemas.
+  - `app-server-backend.ts` implements the `app-server` backend on top of the process manager.
 - Tests: `tests/unit/codex-*.test.ts`
 
 ## References
 
 - Codex CLI reference (exec, JSONL, output schema, global flags): <https://developers.openai.com/codex/cli/reference/>
 - Codex config reference (config overrides, MCP servers): <https://developers.openai.com/codex/config>
-- AI SDK codex app-server provider: <https://ai-sdk.dev/providers/community-providers/codex-app-server#codex-cli-app-server-provider>
+- Codex app-server docs: <https://developers.openai.com/codex/app-server/>
+- ADR 0012: App-server schema artifacts -- `docs/adr/0012-codex-app-server-schema-artifacts.md`
+- SPEC 022: App-server schema workflow -- `docs/specs/022-codex-app-server-schemas.md`
 - AI SDK MCP tools overview (context on MCP tool wiring): <https://ai-sdk.dev/docs/ai-sdk-core/mcp-tools>
 - Codex SDK (TypeScript) README: <https://github.com/openai/codex/blob/main/sdk/typescript/README.md>
 - SPEC 021: SDK backend option fidelity (v1.1) -- `docs/specs/021-sdk-backend-option-fidelity.md`
