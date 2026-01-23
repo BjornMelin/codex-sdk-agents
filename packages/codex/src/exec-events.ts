@@ -365,7 +365,11 @@ export function createThreadEventMapper(
           const itemId = item.id ?? "__agent__";
           const cachedText = itemTextById.get(itemId);
           const text = cachedText ?? item.text ?? lastAgentText;
-          lastAgentText = text;
+
+          // Only update lastAgentText if we have fresh text (not falling back from lastAgentText).
+          if (cachedText || item.text) {
+            lastAgentText = text;
+          }
 
           const e: CodexMessageCompletedEvent = {
             type: "codex.message.completed",
