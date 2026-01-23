@@ -21,6 +21,7 @@ pnpm-debug.log*
 
 # Local Codex workspace data
 .codex/
+docs/research/
 
 # Generated Codex JSON schema bundles (reproducible artifacts)
 tools/codex-schemas/
