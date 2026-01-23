@@ -173,13 +173,13 @@ Expose APIs:
   repoHash: string,
   maxChars: number,
 ): Promise<string>`
-  - **Concurrency**: Safe for concurrent readers. Acquires a read lock (non-exclusive) to prevent inconsistent reads if writers are in progress.
-  - **Locking**: Acquires a read lock. Multiple readers can hold the read lock simultaneously; writers block until all readers release.
-  - **On contention**: Readers do not block writers indefinitely. If a writer is waiting, the lock manager may signal readers to release early (fair scheduling).
+  - **Concurrency**: Safe for concurrent readers. Acquires a read lock (non-exclusive) to prevent inconsistent reads if a write lock is in progress.
+  - **Locking**: Acquires a read lock. Multiple readers can hold the read lock simultaneously; writers block readers while a write lock is held.
+  - **On contention**: Readers block when a write lock is held; once the write lock is released, readers proceed (fair scheduling).
   - **Errors thrown**:
-    - `LockAcquisitionError`: if read lock cannot be acquired within timeout
-    - `ParseError`: if memory.json or summaries.jsonl is malformed
-    - `IOError`: for read failures
+    - `LockAcquisitionError`: if read lock cannot be acquired within timeout.
+    - `ParseError`: if memory.json or summaries.jsonl is malformed.
+    - `IOError`: for read failures.
 
 Example usage:
 
@@ -263,7 +263,7 @@ Implement a **RedactionPipeline** with the following ordered stages to prevent s
 
 - **Concurrency and locking tests** (addressing atomic write and locking behavior from lines 22–38):
   - **Lock acquisition**: Verify that multiple concurrent writers block each other (exclusive lock).
-  - **Reader-writer behavior**: Verify that concurrent readers succeed while a writer blocks readers (fair scheduling).
+  - **Reader-writer behavior**: Verify that concurrent readers succeed while writers block readers (fair scheduling).
   - **Lock timeouts**: Verify that lock acquisition throws `LockAcquisitionError` when timeout is exceeded (default 5s for write, 1s for append).
   - **Atomic writes**: Simulate process crash during write (e.g., kill process after temp file is created but before rename). Verify that:
     - Old memory.json remains intact (rollback behavior).

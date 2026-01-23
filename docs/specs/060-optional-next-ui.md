@@ -103,6 +103,15 @@ Configuration for concurrency, timeouts, and polling can be set via environment 
 - Validation: UI must enforce a maximum timeout ceiling (e.g., 24 hours) to prevent runaway processes, and reject workflow-declared timeouts that exceed the ceiling.
 
 - **Streaming**: Initial version can poll `~/.codex-toolloop/index.jsonl` and events.jsonl for updates; WebSocket/SSE streaming is optional.
+  - **Polling intervals**: Use 1–5 seconds for events.jsonl (high-frequency updates) and 10–30 seconds for index.jsonl (less frequent changes). Adjust based on latency and resource constraints.
+  - **Backoff strategy**: On repeated failures, implement exponential backoff (e.g., 2× delay up to a maximum of 30–60 seconds) to avoid overwhelming the filesystem and gracefully degrade when artifacts are unavailable.
+  - **Error handling for missing/corrupt artifacts**:
+    - Treat missing files as empty state (no runs, no events) rather than fatal errors; log the condition and continue polling.
+    - For parse errors in JSONL lines: validate each line and skip malformed entries; broadcast parse-error events to the UI for logging and debugging.
+    - Retry parsing with exponential backoff if the entire file is corrupt or unreadable; do not block the UI.
+  - **Decision rubric: When to prefer WebSocket/SSE over polling**:
+    - **Use streaming (WebSocket/SSE)**: High concurrent users, frequent updates (sub-second latency required), or server-driven push where clients must react immediately to state changes.
+    - **Use polling**: Single-user or low-concurrency scenarios, infrequent updates, simple ephemeral deployments (Next.js dev server, single CLI session), or when WebSocket infrastructure is unavailable.
 
 ### ui-runs.jsonl schema
 

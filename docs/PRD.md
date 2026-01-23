@@ -173,9 +173,14 @@ This is designed for local CLI usage first, with an optional lightweight local N
   - Provide a meta-tool surface for huge catalogs (list tools → fetch schema → call tool).
 - **Security posture:**
   - Never connect to MCP servers unless explicitly configured.
-  - Provide a “trust registry” to mark servers as trusted/untrusted.
+  - Provide a "trust registry" to mark servers as trusted/untrusted.
   - Enforce allowlist/denylist per workflow and role.
-  - Separate “tool discovery” from “tool execution” where possible.
+  - Separate "tool discovery" from "tool execution" where possible.
+  - **Transport-layer security (for non-local/production deployments):**
+    - Origin header validation to mitigate DNS rebinding attacks; validate that request origin matches expected deployment domain.
+    - Service binding to localhost (127.0.0.1) for local-only modes to ensure isolated access; use this for single-user CLI scenarios.
+    - Mandatory HTTPS with authentication for non-local or production deployments; enforce TLS with certificate validation.
+    - Support for session resumption metadata (Last-Event-ID) for safe streaming reconnects; allow clients to resume event streams from known checkpoints without data loss.
 
 ### FR4: Codex integration modes
 

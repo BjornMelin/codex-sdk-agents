@@ -32,7 +32,7 @@ Codex ToolLoop will implement three backends behind a single `CodexBackend` inte
 
    - For interactive multi-step runs
    - For persistent thread mode
-   - For injection and interrupts
+   - For interrupts (injection support removed as of 2026-01-23; see amendment note)
 
 2. Complement: Exec backend (codex exec)
 
