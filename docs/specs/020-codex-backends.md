@@ -37,6 +37,7 @@ export type CodexBackendKind = "app-server" | "exec" | "sdk";
 
 export type CodexApprovalMode = "untrusted" | "on-failure" | "on-request" | "never";
 export type CodexSandboxMode = "read-only" | "workspace-write" | "danger-full-access";
+export type CodexWebSearchMode = "disabled" | "cached" | "live";
 
 /**
  * Superset of reasoning effort values. Individual backends may reject values
@@ -72,6 +73,10 @@ export type CodexRunOptions = {
   configOverrides?: Record<string, JsonValue>;
   baseInstructions?: string;
   developerInstructions?: string;
+  networkAccessEnabled?: boolean;
+  webSearchMode?: CodexWebSearchMode;
+  webSearchEnabled?: boolean;
+  additionalDirectories?: string[];
 
   signal?: AbortSignal;
   timeoutMs?: number;
@@ -202,11 +207,14 @@ export interface CodexBackend {
 - Optional: used only where direct SDK thread control is required.
 - Treats `model` and `reasoningEffort` as **thread-level defaults**:
   - The backend creates a new SDK thread whenever any thread-level setting changes: `cwd`, `model`, `reasoningEffort`, `sandboxMode`, `approvalMode`,
-    `skipGitRepoCheck`.
+    `skipGitRepoCheck`, `networkAccessEnabled`, `webSearchMode`, `webSearchEnabled`, `additionalDirectories`.
   - This ensures per-run options are actually applied and that returned metadata reflects the model used.
 - SDK reasoning effort support is limited by `@openai/codex-sdk` thread option types:
   - Supported: `minimal | low | medium | high | xhigh`
   - Unsupported (throws): `none`
+- SDK turn options:
+  - `outputSchema` and `signal` are forwarded to `thread.runStreamed(...)`.
+  - Structured inputs are supported for `text` and `localImage` only; other item types throw.
 - SDK file change kinds are normalized:
   - SDK emits `add | update | delete` which are mapped to `added | modified | deleted` for `codex.file.changed.kind`.
 

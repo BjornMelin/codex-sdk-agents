@@ -101,14 +101,41 @@ export class SdkBackend implements CodexBackend {
     }
 
     const unsupported: string[] = [];
-    if (options.signal !== undefined) {
-      unsupported.push("signal");
-    }
     if (options.timeoutMs !== undefined) {
       unsupported.push("timeoutMs");
     }
     if (options.mcpServers !== undefined) {
       unsupported.push("mcpServers");
+    }
+    if (options.configOverrides !== undefined) {
+      unsupported.push("configOverrides");
+    }
+    if (options.threadMode !== undefined) {
+      unsupported.push("threadMode");
+    }
+    if (options.codexPath !== undefined) {
+      unsupported.push("codexPath");
+    }
+    if (options.codexArgsPrefix !== undefined) {
+      unsupported.push("codexArgsPrefix");
+    }
+    if (options.sandboxPolicy !== undefined) {
+      unsupported.push("sandboxPolicy");
+    }
+    if (options.baseInstructions !== undefined) {
+      unsupported.push("baseInstructions");
+    }
+    if (options.developerInstructions !== undefined) {
+      unsupported.push("developerInstructions");
+    }
+    if (options.reasoningSummary !== undefined) {
+      unsupported.push("reasoningSummary");
+    }
+    if (options.collaborationMode !== undefined) {
+      unsupported.push("collaborationMode");
+    }
+    if (options.outputSchemaJson !== undefined) {
+      unsupported.push("outputSchemaJson");
     }
     if (unsupported.length > 0) {
       throw new CodexBackendError(
@@ -126,6 +153,10 @@ export class SdkBackend implements CodexBackend {
       sandboxMode,
       approvalPolicy,
       skipGitRepoCheck: options.skipGitRepoCheck,
+      networkAccessEnabled: options.networkAccessEnabled ?? null,
+      webSearchMode: options.webSearchMode ?? null,
+      webSearchEnabled: options.webSearchEnabled ?? null,
+      additionalDirectories: options.additionalDirectories ?? null,
     });
 
     if (this.thread === null || this.threadConfigKey !== threadConfigKey) {
@@ -138,6 +169,18 @@ export class SdkBackend implements CodexBackend {
         ...(modelReasoningEffort !== undefined ? { modelReasoningEffort } : {}),
         ...(options.skipGitRepoCheck !== undefined
           ? { skipGitRepoCheck: options.skipGitRepoCheck }
+          : {}),
+        ...(options.networkAccessEnabled !== undefined
+          ? { networkAccessEnabled: options.networkAccessEnabled }
+          : {}),
+        ...(options.webSearchMode !== undefined
+          ? { webSearchMode: options.webSearchMode }
+          : {}),
+        ...(options.webSearchEnabled !== undefined
+          ? { webSearchEnabled: options.webSearchEnabled }
+          : {}),
+        ...(options.additionalDirectories !== undefined
+          ? { additionalDirectories: options.additionalDirectories }
           : {}),
       });
     }
@@ -168,7 +211,39 @@ export class SdkBackend implements CodexBackend {
     let threadId: string | undefined;
     let turnId: string | undefined;
 
-    const { events } = await this.thread.runStreamed(prompt);
+    type SdkUserInput =
+      | { type: "text"; text: string }
+      | { type: "local_image"; path: string };
+
+    const toSdkInput = (): string | SdkUserInput[] => {
+      if (!options.input) {
+        return prompt;
+      }
+      const items: SdkUserInput[] = [];
+      for (const item of options.input) {
+        if (item.type === "text") {
+          items.push({ type: "text", text: item.text });
+          continue;
+        }
+        if (item.type === "localImage") {
+          items.push({ type: "local_image", path: item.path });
+          continue;
+        }
+        throw new CodexBackendError(
+          `SDK backend does not support input item type: "${item.type}".`,
+        );
+      }
+      return items;
+    };
+
+    const turnOptions = {
+      ...(options.outputSchema !== undefined
+        ? { outputSchema: options.outputSchema }
+        : {}),
+      ...(options.signal !== undefined ? { signal: options.signal } : {}),
+    };
+
+    const { events } = await this.thread.runStreamed(toSdkInput(), turnOptions);
 
     for await (const raw of events) {
       const parsed = parseThreadEventLike(raw);

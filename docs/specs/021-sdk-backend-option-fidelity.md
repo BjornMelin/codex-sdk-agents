@@ -9,6 +9,7 @@ Ensure the `sdk` backend:
 - Actually uses the caller-requested `model` and `reasoningEffort`.
 - Returns accurate run metadata (`CodexRunResult.model`).
 - Emits normalized `codex.file.changed.kind` values (no silent `unknown` downgrade for SDK events).
+- Forwards supported SDK thread and turn options (network access, web search, output schema, signal).
 
 ## Context
 
@@ -40,6 +41,8 @@ Key details:
 - `@openai/codex-sdk@0.89.0` defines `ThreadOptions.model` and `ThreadOptions.modelReasoningEffort` as thread options.
 - `@openai/codex-sdk@0.89.0` defines file change kinds as `add|update|delete`.
 - `@openai/codex-sdk@0.89.0` defines `ModelReasoningEffort` as `minimal|low|medium|high|xhigh` (does not include `none`).
+- `@openai/codex-sdk@0.89.0` supports thread-level `networkAccessEnabled`, `webSearchMode`, `webSearchEnabled`, and `additionalDirectories`.
+- `@openai/codex-sdk@0.89.0` supports per-turn `outputSchema` and `signal`.
 
 ## Decision framework (major choice)
 
@@ -91,6 +94,10 @@ The SDK backend MUST reuse a thread only when all thread-level settings are iden
 - `sandboxMode`
 - `approvalPolicy`
 - `skipGitRepoCheck`
+- `networkAccessEnabled`
+- `webSearchMode`
+- `webSearchEnabled`
+- `additionalDirectories`
 
 If any of these change between runs, the backend MUST create a new thread via `codex.startThread(...)`.
 
@@ -113,6 +120,27 @@ Existing values MUST be preserved:
 - `added | modified | deleted | renamed` (pass-through)
 - Any other kind maps to `unknown`
 
+### 5) Turn options support
+
+- `options.outputSchema` MUST be forwarded to `thread.runStreamed(..., { outputSchema })`.
+- `options.signal` MUST be forwarded to `thread.runStreamed(..., { signal })`.
+- Unsupported options MUST throw a `CodexBackendError` to avoid silent drops.
+
+Explicitly unsupported for SDK backend (as of `@openai/codex-sdk@0.89.0`):
+
+- `timeoutMs`
+- `mcpServers`
+- `configOverrides`
+- `threadMode`
+- `codexPath`
+- `codexArgsPrefix`
+- `sandboxPolicy`
+- `baseInstructions`
+- `developerInstructions`
+- `reasoningSummary`
+- `collaborationMode`
+- `outputSchemaJson`
+
 ## Implementation plan
 
 ### Code changes
@@ -121,6 +149,10 @@ Existing values MUST be preserved:
    - Compute an explicit thread configuration key that includes all thread-level settings.
    - Create/recreate the SDK thread when the key changes.
    - Pass `model` and `modelReasoningEffort` into `Codex.startThread(...)`.
+   - Pass SDK thread options (`networkAccessEnabled`, `webSearchMode`,
+     `webSearchEnabled`, `additionalDirectories`) into `Codex.startThread(...)`.
+   - Forward `outputSchema` and `signal` to `runStreamed(...)`.
+   - Reject unsupported options with a `CodexBackendError`.
    - Validate `options.reasoningEffort` and throw on unsupported values.
    - Return `model: effectiveModel` in the `CodexRunResult`.
 

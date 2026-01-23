@@ -21,6 +21,9 @@ export type CodexSandboxMode =
   | "workspace-write"
   | "danger-full-access";
 
+/** Web search modes supported by the SDK backend. */
+export type CodexWebSearchMode = "disabled" | "cached" | "live";
+
 /**
  * Reasoning effort values are model-dependent.
  *
@@ -99,6 +102,18 @@ export type CodexRunOptions = {
 
   /** App-server only: override developer instructions for the thread. */
   developerInstructions?: string;
+
+  /** SDK-only: enable network access for the thread. */
+  networkAccessEnabled?: boolean;
+
+  /** SDK-only: web search mode selection. */
+  webSearchMode?: CodexWebSearchMode;
+
+  /** SDK-only: enable web search for the thread. */
+  webSearchEnabled?: boolean;
+
+  /** SDK-only: additional directories exposed to the SDK thread. */
+  additionalDirectories?: string[];
 
   /** Abort the run. */
   signal?: AbortSignal;

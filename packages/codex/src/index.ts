@@ -23,6 +23,7 @@ export type {
   CodexRunResult,
   CodexSandboxMode,
   CodexThreadMode,
+  CodexWebSearchMode,
 } from "./backend.js";
 
 export { CodexBackendError } from "./backend.js";
