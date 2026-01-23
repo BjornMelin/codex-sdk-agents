@@ -211,6 +211,65 @@ describe("createCodexAppServerEventMapper", () => {
     ).toBe(true);
   });
 
+  it("emits approval and user input server request events", async () => {
+    const events: CodexEvent[] = [];
+    const mapper = createCodexAppServerEventMapper({
+      backend: "app-server",
+      onEvent: (event) => {
+        events.push(event);
+      },
+    });
+
+    mapper.setThreadId("thr_1");
+
+    await mapper.handleServerRequest({
+      id: 100,
+      method: "item/tool/requestUserInput",
+      params: {
+        threadId: "thr_1",
+        turnId: "turn_1",
+        itemId: "item_1",
+        questions: [
+          {
+            id: "q1",
+            header: "Confirm",
+            question: "Proceed?",
+            options: null,
+          },
+        ],
+      },
+    });
+
+    await mapper.handleServerRequest({
+      id: 101,
+      method: "item/commandExecution/requestApproval",
+      params: {
+        threadId: "thr_1",
+        turnId: "turn_1",
+        itemId: "item_2",
+        reason: null,
+        command: "ls",
+        cwd: "/repo",
+        commandActions: [],
+        proposedExecpolicyAmendment: null,
+      },
+    });
+
+    const userInput = events.find(
+      (event) => event.type === "codex.user_input.requested",
+    );
+    expect(userInput).toBeDefined();
+    expect(userInput?.requestId).toBe(100);
+    expect(userInput?.params.itemId).toBe("item_1");
+
+    const approval = events.find(
+      (event) => event.type === "codex.approval.requested",
+    );
+    expect(approval).toBeDefined();
+    expect(approval?.kind).toBe("command");
+    expect(approval?.requestId).toBe(101);
+  });
+
   it("emits stdin notifications for terminal interactions", async () => {
     const events: CodexEvent[] = [];
     const mapper = createCodexAppServerEventMapper({
