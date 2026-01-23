@@ -1,7 +1,7 @@
 ---
 id: SPEC-024
 title: Codex app-server v2 endpoint coverage
-status: In Progress
+status: Completed
 date: 2026-01-23
 related_adrs:
   - docs/adr/0014-codex-app-server-v2-canonical-client.md

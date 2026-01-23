@@ -1,7 +1,7 @@
 ---
 id: SPEC-026
 title: Codex approvals, execpolicy, and permissions UI
-status: In Progress
+status: Completed
 date: 2026-01-23
 related_adrs:
   - docs/adr/0008-security.md

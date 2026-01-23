@@ -1,7 +1,7 @@
 ---
 id: SPEC-028
 title: Codex config layering, cwd resolution, and requirements
-status: In Progress
+status: Completed
 date: 2026-01-23
 related_adrs:
   - docs/adr/0008-security.md

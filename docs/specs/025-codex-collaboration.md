@@ -1,7 +1,7 @@
 ---
 id: SPEC-025
 title: Codex collaboration modes and collab tool calls
-status: In Progress
+status: Completed
 date: 2026-01-23
 related_adrs:
   - docs/adr/0004-multi-agent-orchestration.md

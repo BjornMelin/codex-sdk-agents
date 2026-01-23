@@ -1,7 +1,7 @@
 ---
 id: SPEC-029
 title: AI SDK UI message stream contract
-status: In Progress
+status: Completed
 date: 2026-01-23
 related_adrs:
   - docs/adr/0015-ai-sdk-ui-stream-contract.md

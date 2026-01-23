@@ -1,7 +1,7 @@
 ---
 id: SPEC-027
 title: Codex skills discovery, configuration, and invocation
-status: In Progress
+status: Completed
 date: 2026-01-23
 related_adrs:
   - docs/adr/0016-skills-only-instruction-packs.md
