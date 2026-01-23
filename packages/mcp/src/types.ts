@@ -21,7 +21,7 @@ export type McpTrustLevel = z.infer<typeof mcpTrustLevelSchema>;
  */
 const mcpHttpTransportSchema = z.strictObject({
   type: z.literal("http"),
-  url: z.string().url(),
+  url: z.url(),
   headers: z.record(z.string(), z.string()).optional(),
   authProviderId: z.string().min(1).optional(),
 });
@@ -33,7 +33,7 @@ const mcpHttpTransportSchema = z.strictObject({
  */
 const mcpSseTransportSchema = z.strictObject({
   type: z.literal("sse"),
-  url: z.string().url(),
+  url: z.url(),
   headers: z.record(z.string(), z.string()).optional(),
   authProviderId: z.string().min(1).optional(),
 });

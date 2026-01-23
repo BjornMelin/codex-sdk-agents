@@ -23,15 +23,17 @@ describe("SdkBackend", () => {
   });
 
   it("forwards model and reasoningEffort as thread defaults", async () => {
+    const runStreamed = vi.fn(async () => ({
+      events: makeSingleAgentMessageEventStream({
+        threadId: "t-1",
+        turnId: "u-1",
+        text: "hello",
+      }),
+    }));
+
     startThread.mockImplementationOnce((_options: unknown) => {
       return {
-        runStreamed: vi.fn(async () => ({
-          events: makeSingleAgentMessageEventStream({
-            threadId: "t-1",
-            turnId: "u-1",
-            text: "hello",
-          }),
-        })),
+        runStreamed,
       };
     });
 
@@ -48,6 +50,10 @@ describe("SdkBackend", () => {
       sandboxMode: "read-only",
       approvalMode: "never",
       skipGitRepoCheck: true,
+      networkAccessEnabled: true,
+      webSearchMode: "cached",
+      webSearchEnabled: true,
+      additionalDirectories: ["/mnt/data"],
     });
 
     expect(result.backend).toBe("sdk");
@@ -69,7 +75,52 @@ describe("SdkBackend", () => {
       model: "requested-model",
       modelReasoningEffort: "high",
       skipGitRepoCheck: true,
+      networkAccessEnabled: true,
+      webSearchMode: "cached",
+      webSearchEnabled: true,
+      additionalDirectories: ["/mnt/data"],
     });
+    expect(runStreamed).toHaveBeenCalledWith("prompt", {});
+  });
+
+  it("passes outputSchema, signal, and structured inputs to the SDK turn", async () => {
+    const runStreamed = vi.fn(async () => ({
+      events: makeSingleAgentMessageEventStream({
+        threadId: "t-2",
+        turnId: "u-2",
+        text: "ok",
+      }),
+    }));
+
+    startThread.mockImplementationOnce((_options: unknown) => {
+      return { runStreamed };
+    });
+
+    const { SdkBackend } = await import("../../packages/codex/src/index.js");
+    const backend = new SdkBackend({
+      defaultModel: "default-model",
+      codexClient: { startThread },
+    });
+
+    const controller = new AbortController();
+
+    await backend.run("ignored prompt", {
+      cwd: "/tmp",
+      outputSchema: { type: "object" },
+      signal: controller.signal,
+      input: [
+        { type: "text", text: "hello", text_elements: [] },
+        { type: "localImage", path: "/tmp/image.png" },
+      ],
+    });
+
+    expect(runStreamed).toHaveBeenCalledWith(
+      [
+        { type: "text", text: "hello" },
+        { type: "local_image", path: "/tmp/image.png" },
+      ],
+      { outputSchema: { type: "object" }, signal: controller.signal },
+    );
   });
 
   it("recreates the SDK thread when thread defaults change", async () => {
@@ -119,5 +170,36 @@ describe("SdkBackend", () => {
     await expect(
       backend.run("prompt", { cwd: "/tmp", reasoningEffort: "none" }),
     ).rejects.toThrow(/does not support reasoningEffort: "none"/);
+  });
+
+  it("rejects unsupported SDK options and input types", async () => {
+    startThread.mockImplementationOnce((_options: unknown) => {
+      return {
+        runStreamed: vi.fn(async () => ({
+          events: makeSingleAgentMessageEventStream({
+            threadId: "t-3",
+            turnId: "u-3",
+            text: "noop",
+          }),
+        })),
+      };
+    });
+
+    const { SdkBackend } = await import("../../packages/codex/src/index.js");
+    const backend = new SdkBackend({
+      defaultModel: "default-model",
+      codexClient: { startThread },
+    });
+
+    await expect(
+      backend.run("prompt", { cwd: "/tmp", timeoutMs: 1000 }),
+    ).rejects.toThrow(/does not support options: timeoutMs/);
+
+    await expect(
+      backend.run("prompt", {
+        cwd: "/tmp",
+        input: [{ type: "image", url: "https://example.com/img.png" }],
+      }),
+    ).rejects.toThrow(/does not support input item type: "image"/);
   });
 });

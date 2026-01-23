@@ -220,4 +220,29 @@ describe("AppServerBackend", () => {
       developer_instructions: null,
     });
   });
+
+  it("passes sandboxPolicy, outputSchema, and reasoningSummary into turn/start", async () => {
+    const { AppServerBackend } = await import(
+      "../../packages/codex/src/index.js"
+    );
+    const backend = new AppServerBackend();
+
+    await backend.run("hello", {
+      cwd: process.cwd(),
+      sandboxPolicy: { type: "readOnly" },
+      outputSchema: { type: "object" },
+      reasoningSummary: "concise",
+    });
+
+    const turnStart = requests.findLast((r) => r.method === "turn/start");
+    expect(turnStart).toBeDefined();
+    const params = turnStart?.params as {
+      sandboxPolicy?: unknown;
+      outputSchema?: unknown;
+      summary?: unknown;
+    };
+    expect(params.sandboxPolicy).toEqual({ type: "readOnly" });
+    expect(params.outputSchema).toEqual({ type: "object" });
+    expect(params.summary).toBe("concise");
+  });
 });
