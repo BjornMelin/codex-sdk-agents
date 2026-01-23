@@ -6,6 +6,12 @@
     "indentWidth": 2,
     "lineWidth": 80
   },
+  "files": {
+    "includes": [
+      "**/*",
+      "!!**/packages/codex-app-server-protocol/src/generated"
+    ]
+  },
   "linter": {
     "enabled": true,
     "rules": {

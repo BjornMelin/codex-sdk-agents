@@ -21,6 +21,8 @@ export default defineConfig([
     "build/**",
     ".turbo/**",
     "opensrc/**",
+    "packages/codex-app-server-protocol/src/generated/**",
+    "tools/codex-schemas/**",
   ]),
   {
     files: ["**/*.ts", "**/*.tsx"],

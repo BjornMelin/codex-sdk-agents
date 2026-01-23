@@ -22,6 +22,10 @@ pnpm-debug.log*
 # Local Codex workspace data
 .codex/
 
+# Generated Codex JSON schema bundles (reproducible artifacts)
+tools/codex-schemas/
+tools/.trash/
+
 # Tooling caches
 .eslintcache
 .parcel-cache/
