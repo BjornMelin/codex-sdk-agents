@@ -17,7 +17,11 @@ This directory contains records of significant architecture decisions made for t
 | 0009 | [Dynamic tool loading and MCP server routing (minimize context bloat)](0009-dynamic-tool-loading.md) | Accepted |
 | 0010 | [Standardize Turborepo configuration for the monorepo](0010-turborepo-monorepo.md) | Accepted |
 | 0011 | [SDK backend thread option fidelity](0011-sdk-backend-thread-option-fidelity.md) | Accepted |
-| 0012 | [Commit Codex app-server generated protocol artifacts](0012-codex-app-server-schema-artifacts.md) | Accepted |
+| 0012 | [Commit Codex app-server generated protocol artifacts](0012-codex-app-server-schema-artifacts.md) | Superseded |
+| 0013 | [Commit Codex app-server protocol TypeScript artifacts only](0013-codex-app-server-protocol-types.md) | Accepted |
+| 0014 | [Codex app-server v2 canonical client + event model](0014-codex-app-server-v2-canonical-client.md) | Accepted |
+| 0015 | [AI SDK UI stream as the sole client-facing transport](0015-ai-sdk-ui-stream-contract.md) | Accepted |
+| 0016 | [Skills-only instruction packs (custom prompts deprecated)](0016-skills-only-instruction-packs.md) | Accepted |
 
 ---
 

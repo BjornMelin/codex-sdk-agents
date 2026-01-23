@@ -33,8 +33,9 @@ pnpm examples:basic
 
 ## Codex app-server schema upgrades
 
-- When changing the pinned Codex CLI version (`@openai/codex`), regenerate the app-server protocol artifacts with `pnpm codex:app-server:schema:gen` and update integration code as needed for protocol deltas.
-- Guide: `docs/codex-app-server-schemas.md` (policy: ADR 0012, requirements: SPEC 022).
+- When changing the pinned Codex CLI version (`@openai/codex`), regenerate the app-server protocol artifacts with `pnpm codex:gen` and update integration code as needed for protocol deltas.
+- Guide: `docs/codex-app-server-protocol.md` (policy: ADR 0013/0014, requirements: SPEC 023/024-029).
+- If the Codex SDK is involved, review the `codex-sdk` skill guidance for safe upgrade and integration steps.
 
 ## Turborepo (Vercel)
 
@@ -114,10 +115,10 @@ Use this source code when you need to understand how a package works internally,
 To fetch source code for a package or repository you need to understand, run:
 
 ```bash
-opensrc <package>           # npm package (example: opensrc zod)
-opensrc pypi:<package>      # Python package (example: opensrc pypi:requests)
-opensrc crates:<package>    # Rust crate (example: opensrc crates:serde)
-opensrc <owner>/<repo>      # GitHub repo (example: opensrc vercel/ai)
+npx opensrc <package>           # npm package (e.g., npx opensrc zod)
+npx opensrc pypi:<package>      # Python package (e.g., npx opensrc pypi:requests)
+npx opensrc crates:<package>    # Rust crate (e.g., npx opensrc crates:serde)
+npx opensrc <owner>/<repo>      # GitHub repo (e.g., npx opensrc vercel/ai)
 ```
 
 <!-- opensrc:end -->

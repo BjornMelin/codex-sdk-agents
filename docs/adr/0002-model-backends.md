@@ -113,12 +113,12 @@ References:
 
 The app-server backend no longer relies on the AI SDK community provider.
 
-- **Default backend remains app-server**, but is now implemented as a schema-driven JSONL-over-stdio client for `codex app-server`.
-- **Runtime safety improved**: protocol envelopes and key messages are validated with Ajv against the committed JSON Schema bundle.
+- **Default backend remains app-server**, but is now implemented as a JSONL-over-stdio client for `codex app-server`.
+- **Runtime safety improved**: JSON-RPC envelopes are validated with Zod while preserving forward-compatible fields.
 - **Mid-execution injection removed**: the backend API no longer supports `inject()` for app-server v2 in this repo; interruption is supported via `turn/interrupt`.
 
 References:
 
 - Codex app-server docs: <https://developers.openai.com/codex/app-server/>
-- ADR 0012: Schema artifacts policy -- `docs/adr/0012-codex-app-server-schema-artifacts.md`
-- SPEC 022: Schema workflow -- `docs/specs/022-codex-app-server-schemas.md`
+- ADR 0013: Protocol types policy -- `docs/adr/0013-codex-app-server-protocol-types.md`
+- SPEC 023: Protocol workflow -- `docs/specs/023-codex-app-server-protocol.md`

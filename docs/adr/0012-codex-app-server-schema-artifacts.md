@@ -1,20 +1,23 @@
 ---
 id: ADR-0012
 title: Commit Codex app-server generated protocol artifacts
-status: Accepted
+status: Superseded
 date: 2026-01-23
 related_adrs:
   - docs/adr/0002-model-backends.md
   - docs/adr/0006-testing-vitest.md
   - docs/adr/0008-security.md
   - docs/adr/0009-dynamic-tool-loading.md
+  - docs/adr/0013-codex-app-server-protocol-types.md
 related_specs:
   - docs/specs/020-codex-backends.md
   - docs/specs/022-codex-app-server-schemas.md
 related_docs:
   - docs/research/codex-0.89.0-delta.md
-  - packages/codex-app-server-schema/README.md
+  - packages/codex-app-server-protocol/README.md
 ---
+
+> Superseded by ADR-0013: `docs/adr/0013-codex-app-server-protocol-types.md`.
 
 ## Context
 

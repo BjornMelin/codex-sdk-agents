@@ -30,16 +30,16 @@ file change kind to be reported as `unknown` to consumers.
 
 Inspected versions (from `opensrc list`):
 
-- `@openai/codex-sdk@0.88.0`
-- `@openai/codex@0.88.0`
+- `@openai/codex-sdk@0.89.0`
+- `@openai/codex@0.89.0`
 - `ai@6.0.48`
 - `zod@4.3.6`
 
 Key details:
 
-- `@openai/codex-sdk@0.88.0` defines `ThreadOptions.model` and `ThreadOptions.modelReasoningEffort` as thread options.
-- `@openai/codex-sdk@0.88.0` defines file change kinds as `add|update|delete`.
-- `@openai/codex-sdk@0.88.0` defines `ModelReasoningEffort` as `minimal|low|medium|high|xhigh` (does not include `none`).
+- `@openai/codex-sdk@0.89.0` defines `ThreadOptions.model` and `ThreadOptions.modelReasoningEffort` as thread options.
+- `@openai/codex-sdk@0.89.0` defines file change kinds as `add|update|delete`.
+- `@openai/codex-sdk@0.89.0` defines `ModelReasoningEffort` as `minimal|low|medium|high|xhigh` (does not include `none`).
 
 ## Decision framework (major choice)
 
@@ -77,7 +77,7 @@ Supported reasoning efforts for SDK backend:
 
 - `minimal | low | medium | high | xhigh`
 
-Explicitly unsupported for SDK backend (as of `@openai/codex-sdk@0.88.0`):
+Explicitly unsupported for SDK backend (as of `@openai/codex-sdk@0.89.0`):
 
 - `none`
 
