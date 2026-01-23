@@ -1,3 +1,8 @@
+import type {
+  CollaborationMode,
+  ReasoningSummary,
+  v2,
+} from "@codex-toolloop/codex-app-server-protocol";
 import type { CodexEvent } from "./events.js";
 import type { JsonObject, JsonValue } from "./types.js";
 
@@ -58,12 +63,14 @@ export type CodexRunOptions = {
 
   approvalMode?: CodexApprovalMode;
   sandboxMode?: CodexSandboxMode;
+  sandboxPolicy?: v2.SandboxPolicy;
 
   /**
    * Requested reasoning effort.
    * Backends may reject values not supported by their underlying transport/provider.
    */
   reasoningEffort?: CodexReasoningEffort;
+  reasoningSummary?: ReasoningSummary;
 
   /**
    * App-server thread mode.
@@ -87,11 +94,20 @@ export type CodexRunOptions = {
    */
   configOverrides?: Record<string, JsonValue>;
 
+  /** App-server only: override base instructions for the thread. */
+  baseInstructions?: string;
+
+  /** App-server only: override developer instructions for the thread. */
+  developerInstructions?: string;
+
   /** Abort the run. */
   signal?: AbortSignal;
 
   /** Kill the run after this duration. */
   timeoutMs?: number;
+
+  /** App-server only: JSON Schema to pass to `turn/start`. */
+  outputSchema?: JsonValue;
 
   /** Exec-only: JSON Schema to pass to `codex exec --output-schema`. */
   outputSchemaJson?: JsonValue;
@@ -110,6 +126,18 @@ export type CodexRunOptions = {
 
   /** Exec/SDK: skip git repo checks if supported by the underlying backend. */
   skipGitRepoCheck?: boolean;
+
+  /**
+   * App-server collaboration mode override for this turn.
+   * When set, Codex uses the collaboration mode presets from the app-server.
+   */
+  collaborationMode?: CollaborationMode;
+
+  /**
+   * App-server only: structured user input items. If omitted, the prompt is
+   * sent as a single text input.
+   */
+  input?: v2.UserInput[];
 };
 
 /** Normalized result returned by Codex backends. */
