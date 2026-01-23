@@ -100,6 +100,43 @@ Rules:
 - Use Conventional Commits for every commit and PR title: `feat:`, `fix:`, `docs:`, `chore:`. Prefer a scope when useful (example: `feat(mcp): ...`).
 - pnpm v10 blocks lifecycle scripts by default; keep `pnpm-workspace.yaml#allowBuilds` minimal and audited (or use `pnpm approve-builds`).
 
+## pnpm-workspace.yaml#allowBuilds policy
+
+pnpm v10+ requires explicit allowlist entries in `pnpm-workspace.yaml#allowBuilds` for dependencies that run lifecycle scripts (e.g., `postinstall`, `build`). This prevents supply-chain attacks and unintended script execution during `pnpm install`.
+
+**Current allowBuilds entries** (defined in `pnpm-workspace.yaml`):
+
+- `@biomejs/biome` — Biome linter/formatter with native Rust binary build; required for `pnpm -s fix` and code formatting.
+- `esbuild` — Native bundler used by the build pipeline and Next.js; compiles TypeScript bundles and optimizes outputs.
+
+**Adding new entries to allowBuilds:**
+
+1. **Audit the package**: Review the package's `package.json` lifecycle scripts and source code to ensure they don't pose security risks.
+2. **Update `pnpm-workspace.yaml`**: Add the package name and set the value to `true`:
+   ```yaml
+   allowBuilds:
+     "@biomejs/biome": true
+     esbuild: true
+     new-package: true  # Add new entries alphabetically
+   ```
+3. **PR and approval process**:
+   - In the PR description, document:
+     - Package name and version pinned in `package.json`.
+     - One-line rationale (what does it do in the build pipeline?).
+     - Link to the package source code or npm page.
+     - Summary of the lifecycle scripts being executed.
+   - Require approval from:
+     - **Security reviewer** (codebase lead or security contact): Validate that scripts are safe.
+     - **Build lead** (person maintaining the build pipeline): Confirm it's necessary for the build.
+   - CI must pass all linting, type checking, and tests.
+   - Add a comment to `pnpm-workspace.yaml` alongside the new entry with the rationale (e.g., `# Native module for X`).
+4. **After merge**, verify with `pnpm install` and confirm the build succeeds with no unexpected side effects.
+
+For minimal builds or experimental features, prefer alternatives:
+- Use pre-built binaries or vendor them in the repo (if licensing allows).
+- Pin exact versions in `package.json` and use lock files (`pnpm-lock.yaml`).
+- Use `pnpm approve-builds` interactively if adding entries temporarily for debugging.
+
 <!-- opensrc:start -->
 
 ## Source Code Reference
