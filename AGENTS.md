@@ -5,21 +5,21 @@
 - Node.js 24+ (`.nvmrc`), pnpm (Corepack: `corepack enable`).
 - Copy `.env.example` to `.env`; never commit real keys.
 
-## Project Structure & Module Organization
+## Project Layout
 
-- `apps/cli/`: CLI entrypoint and UX (`apps/cli/src/index.ts`)
+- `apps/cli/`: CLI entrypoint (`apps/cli/src/index.ts`).
 - `packages/`: workspace packages
   - `packages/codex-toolloop/`: core runtime scaffold
   - `packages/codex/`: Codex backends (app-server / exec / sdk)
   - `packages/mcp/`: MCP tool substrate + policy
-  - `packages/workflows/`: workflow and routing utilities
+  - `packages/workflows/`: workflow + routing utilities
   - `packages/testkit/`: fixtures/mocks/temp dirs
-- `src/`: root exports and prototype workflows
-- `tests/unit/`: Vitest runtime tests; `tests/type/`: type-level `*.test-d.ts`
-- `docs/`: PRD, architecture, ADRs (`docs/adr/`), specs (`docs/specs/`)
+- `src/`: root exports + prototype workflows
+- `tests/unit/`: Vitest runtime tests; `tests/type/`: `*.test-d.ts`
+- `docs/`: PRD, ADRs (`docs/adr/`), specs (`docs/specs/`)
 - `examples/`: runnable scripts (`pnpm examples:*`)
 
-## Build, Test, and Development Commands
+## Commands
 
 ```bash
 pnpm install
@@ -33,109 +33,61 @@ pnpm examples:basic
 
 ## Codex app-server schema upgrades
 
-- When changing the pinned Codex CLI version (`@openai/codex`), regenerate the app-server protocol artifacts with `pnpm codex:gen` and update integration code as needed for protocol deltas.
-- Guide: `docs/codex-app-server-protocol.md` (policy: ADR 0013/0014, requirements: SPEC 023/024-029).
-- If the Codex SDK is involved, review the `codex-sdk` skill guidance for safe upgrade and integration steps.
+- If pinned `@openai/codex` version changes, run `pnpm codex:gen` and update integration code for protocol deltas.
+- Guide: `docs/codex-app-server-protocol.md` (ADR 0013/0014, SPEC 023/024-029).
+- When Codex SDK is involved, use the `$codex-sdk` skill guide.
 
 ## Turborepo (Vercel)
 
 - Use `turbo run build` on Vercel (filters inferred by root).
-- Ensure `turbo.json` defines `tasks.build.outputs` for each framework output dir.
+- In `turbo.json`, define `tasks.build.outputs` for each framework output dir.
   - Next.js: `[".next/**", "!.next/cache/**"]`
 - Never include `.next/cache/**` in outputs.
-- Declare task `env` and `globalEnv` in `turbo.json` to avoid stale cache hits.
-- Validate remote caching locally with `turbo run build` and inspect `node_modules/.cache/turbo`.
+- Declare task `env` + `globalEnv` to avoid stale cache hits.
+- Validate remote caching locally: `turbo run build`, then inspect `node_modules/.cache/turbo`.
 
-## Coding Style & Naming Conventions
+## Style
 
 - TypeScript ESM (NodeNext), `strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`.
-- Biome formatting/linting (`biome.json`): 2-space indent, 80-col.
-- Naming: exported schemas use `...Schema`; keep exports small and explicit.
+- Biome (`biome.json`): 2-space indent, 80-col.
+- Exported schemas use `...Schema`; keep exports small and explicit.
 
 ## Development Standards
 
-Required before you mark a task done:
+Required before you finish:
 
-`pnpm -s fix:typecheck`
-
-This runs `pnpm -s fix`, `pnpm -s typecheck`, and `pnpm -s test`. Commit any changes it makes.
+`pnpm -s fix:typecheck` (runs `pnpm -s fix`, `pnpm -s typecheck`, `pnpm -s test`). Keep its changes.
 
 Rules:
 
-- **Biome**:
-  - After autofix, no remaining diagnostics.
-  - Do not ship `lint/correctness/` or `lint/complexity/`.
-  - No broad suppressions.
-  - `biome-ignore` only for a single line/block, with reason + link to issue or ADR/SPEC.
-- **Promises**:
-  - No floating promises.
-  - Handle with `await`, `return`, `.catch(...)`, or `.then(..., onRejected)`.
-  - In files importing/referencing `ai`, `@ai-sdk/*`, `@vercel/ai`, `openai`,
-    `@openai/*`, avoid fire-and-forget; if you detach with `void`, add an
-    adjacent comment and an explicit error surfacing path.
-- **Tests**:
-  - Do not add test-only helpers/shims/mocks/branches to production source.
-  - Keep scaffolding in `tests/**` and test config.
-- **TSDoc (TS/TSX)**:
-  - Each changed/added export needs an immediately preceding `/** ... */`
-    (no blank line).
-  - Summary: one sentence ending with `.`.
-  - Tags: allow only `@remarks @param @typeParam @returns @throws @example @see
-    @deprecated` (in that order).
-  - `@param name - description`; no brace-typing (`@param {`, `@returns {`).
-  - If you add/modify `throw` inside an exported function, add `@throws` (one
-    per exception type).
-  - For AI/RAG code (paths `/agents/` `/rag/` `/mcp/` `/codex/` or AI/RAG
-    imports), each exported function/class also needs `@see` (ADR/SPEC path or
-    official docs URL) or `@remarks` containing `ADR-` or `SPEC-`.
-- Tooling: run `pnpm lint` (ESLint with TSDoc/JSDoc rules via
-    `eslint.config.js`) for syntax and tag ordering; AI/RAG `@see`/`@remarks`
-    checks remain manual.
-- **Characters**:
-  - Do not introduce Unicode em dash U+2014; use `--`.
-  - Detect with `rg -n --pcre2 "\\x{2014}" .`.
+- **Biome**: no remaining diagnostics; no `lint/correctness/` or `lint/complexity/`; no broad suppressions; `biome-ignore` only for one line/block with reason + ADR/SPEC link.
+- **Promises**: no floating promises; use `await`/`return`/`.catch`/`.then(..., onRejected)`.
+- **AI imports** (`ai`, `@ai-sdk/*`, `@vercel/ai`, `openai`, `@openai/*`): no fire-and-forget; if detached with `void`, add a nearby comment and explicit error surfacing.
+- **Tests**: keep helpers/shims/mocks in `tests/**` and test config only.
+- **TSDoc** (TS/TSX): every changed/added export gets `/** ... */` (no blank line). One-sentence summary ending with `.`. Allowed tags only: `@remarks @param @typeParam @returns @throws @example @see @deprecated` (order matters). Use `@param name - desc` and no brace typing. If you add/modify a `throw` in an exported function, add `@throws`. For AI/RAG code (`/agents/`, `/rag/`, `/mcp/`, `/codex/` or AI/RAG imports), each exported function/class must include `@see` (ADR/SPEC path or official docs) or `@remarks` containing `ADR-` or `SPEC-`.
+- **Tooling**: run `pnpm lint` (ESLint rules in `eslint.config.js`); AI/RAG `@see`/`@remarks` checks stay manual.
+- **Characters**: no Unicode em dash U+2014; use `--`. Detect with `rg -n --pcre2 "\\x{2014}" .`.
 
-## Commits & PRs
+## Commits
 
-- Use Conventional Commits for every commit and PR title: `feat:`, `fix:`, `docs:`, `chore:`. Prefer a scope when useful (example: `feat(mcp): ...`).
-- pnpm v10 blocks lifecycle scripts by default; keep `pnpm-workspace.yaml#allowBuilds` minimal and audited (or use `pnpm approve-builds`).
+- Use Conventional Commits for commit messages: `feat:`, `fix:`, `docs:`, `chore:`. Prefer scopes when useful (e.g. `feat(mcp): ...`).
 
-## pnpm-workspace.yaml#allowBuilds policy
+## pnpm-workspace.yaml allowBuilds
 
-pnpm v10+ requires explicit allowlist entries in `pnpm-workspace.yaml#allowBuilds` for dependencies that run lifecycle scripts (e.g., `postinstall`, `build`). This prevents supply-chain attacks and unintended script execution during `pnpm install`.
+pnpm v10+ requires explicit allowlist entries in `pnpm-workspace.yaml#allowBuilds` for packages with lifecycle scripts. Keep this list minimal.
 
-**Current allowBuilds entries** (defined in `pnpm-workspace.yaml`):
+Current allowBuilds entries (defined in `pnpm-workspace.yaml`):
 
-- `@biomejs/biome` — Biome linter/formatter with native Rust binary build; required for `pnpm -s fix` and code formatting.
-- `esbuild` — Native bundler used by the build pipeline and Next.js; compiles TypeScript bundles and optimizes outputs.
+- `@biomejs/biome` -- Biome binary build; required for `pnpm -s fix`.
+- `esbuild` -- Native bundler used by the build pipeline.
 
-**Adding new entries to allowBuilds:**
+When adding a new entry:
 
-1. **Audit the package**: Review the package's `package.json` lifecycle scripts and source code to ensure they don't pose security risks.
-2. **Update `pnpm-workspace.yaml`**: Add the package name and set the value to `true`:
-   ```yaml
-   allowBuilds:
-     "@biomejs/biome": true
-     esbuild: true
-     new-package: true  # Add new entries alphabetically
-   ```
-3. **PR and approval process**:
-   - In the PR description, document:
-     - Package name and version pinned in `package.json`.
-     - One-line rationale (what does it do in the build pipeline?).
-     - Link to the package source code or npm page.
-     - Summary of the lifecycle scripts being executed.
-   - Require approval from:
-     - **Security reviewer** (codebase lead or security contact): Validate that scripts are safe.
-     - **Build lead** (person maintaining the build pipeline): Confirm it's necessary for the build.
-   - CI must pass all linting, type checking, and tests.
-   - Add a comment to `pnpm-workspace.yaml` alongside the new entry with the rationale (e.g., `# Native module for X`).
-4. **After merge**, verify with `pnpm install` and confirm the build succeeds with no unexpected side effects.
+1. Audit the package `package.json` lifecycle scripts and source.
+2. Add the entry in `pnpm-workspace.yaml`, alphabetically, with a short inline comment.
+3. Run `pnpm install`, then `pnpm build` and `pnpm -s fix:typecheck`.
 
-For minimal builds or experimental features, prefer alternatives:
-- Use pre-built binaries or vendor them in the repo (if licensing allows).
-- Pin exact versions in `package.json` and use lock files (`pnpm-lock.yaml`).
-- Use `pnpm approve-builds` interactively if adding entries temporarily for debugging.
+Alternatives for temporary needs: prefer prebuilt binaries, vendoring (if license allows), or `pnpm approve-builds` during local debugging only.
 
 <!-- opensrc:start -->
 
