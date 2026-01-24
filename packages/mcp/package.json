@@ -14,9 +14,7 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
-    "lint": "pnpm -s -C ../.. lint",
-    "test": "pnpm -s -C ../.. test"
+    "build": "tsc -p tsconfig.json"
   },
   "dependencies": {
     "@ai-sdk/mcp": "^1.0.11",

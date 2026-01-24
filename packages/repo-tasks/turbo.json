@@ -1,0 +1,127 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "lint": {
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/apps/**",
+        "$TURBO_ROOT$/packages/**",
+        "$TURBO_ROOT$/src/**",
+        "$TURBO_ROOT$/tests/**",
+        "$TURBO_ROOT$/docs/**",
+        "$TURBO_ROOT$/examples/**",
+        "$TURBO_ROOT$/scripts/**",
+        "$TURBO_ROOT$/tools/**",
+        "$TURBO_ROOT$/biome.json",
+        "$TURBO_ROOT$/eslint.config.js",
+        "$TURBO_ROOT$/tsconfig.json",
+        "$TURBO_ROOT$/.editorconfig"
+      ],
+      "outputs": []
+    },
+    "typecheck": {
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/apps/**",
+        "$TURBO_ROOT$/packages/**",
+        "$TURBO_ROOT$/src/**",
+        "$TURBO_ROOT$/tests/**",
+        "$TURBO_ROOT$/examples/**",
+        "$TURBO_ROOT$/vitest.config.ts",
+        "$TURBO_ROOT$/tsconfig.json"
+      ],
+      "outputs": []
+    },
+    "test": {
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/apps/**",
+        "$TURBO_ROOT$/packages/**",
+        "$TURBO_ROOT$/src/**",
+        "$TURBO_ROOT$/tests/**",
+        "$TURBO_ROOT$/examples/**",
+        "$TURBO_ROOT$/vitest.config.ts"
+      ],
+      "outputs": []
+    },
+    "format": {
+      "cache": false,
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/apps/**",
+        "$TURBO_ROOT$/packages/**",
+        "$TURBO_ROOT$/src/**",
+        "$TURBO_ROOT$/tests/**",
+        "$TURBO_ROOT$/docs/**",
+        "$TURBO_ROOT$/examples/**",
+        "$TURBO_ROOT$/scripts/**",
+        "$TURBO_ROOT$/tools/**",
+        "$TURBO_ROOT$/biome.json",
+        "$TURBO_ROOT$/eslint.config.js",
+        "$TURBO_ROOT$/tsconfig.json",
+        "$TURBO_ROOT$/.editorconfig"
+      ],
+      "outputs": []
+    },
+    "fix": {
+      "cache": false,
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/apps/**",
+        "$TURBO_ROOT$/packages/**",
+        "$TURBO_ROOT$/src/**",
+        "$TURBO_ROOT$/tests/**",
+        "$TURBO_ROOT$/docs/**",
+        "$TURBO_ROOT$/examples/**",
+        "$TURBO_ROOT$/scripts/**",
+        "$TURBO_ROOT$/tools/**",
+        "$TURBO_ROOT$/biome.json",
+        "$TURBO_ROOT$/eslint.config.js",
+        "$TURBO_ROOT$/tsconfig.json",
+        "$TURBO_ROOT$/.editorconfig"
+      ],
+      "outputs": []
+    },
+    "codex:protocol:gen": {
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/scripts/codex-app-server-protocol-postprocess.mjs",
+        "$TURBO_ROOT$/package.json",
+        "$TURBO_ROOT$/pnpm-lock.yaml"
+      ],
+      "outputs": [
+        "$TURBO_ROOT$/packages/codex-app-server-protocol/src/generated/**"
+      ]
+    },
+    "codex:schema:gen": {
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/package.json",
+        "$TURBO_ROOT$/pnpm-lock.yaml"
+      ],
+      "outputs": ["$TURBO_ROOT$/tools/codex-schemas/app-server-protocol/**"]
+    },
+    "codex:gen": {
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/scripts/codex-app-server-protocol-postprocess.mjs",
+        "$TURBO_ROOT$/package.json",
+        "$TURBO_ROOT$/pnpm-lock.yaml"
+      ],
+      "outputs": [
+        "$TURBO_ROOT$/packages/codex-app-server-protocol/src/generated/**",
+        "$TURBO_ROOT$/tools/codex-schemas/app-server-protocol/**"
+      ]
+    },
+    "codex:gen:check": {
+      "cache": false,
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "$TURBO_ROOT$/scripts/codex-app-server-protocol-postprocess.mjs",
+        "$TURBO_ROOT$/package.json",
+        "$TURBO_ROOT$/pnpm-lock.yaml"
+      ],
+      "outputs": []
+    }
+  }
+}

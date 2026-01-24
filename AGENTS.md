@@ -39,8 +39,8 @@ pnpm examples:basic
 
 ## Turborepo (Vercel)
 
-- Use `turbo build` on Vercel (filters inferred by root).
-- Ensure `turbo.json` defines `pipeline.build.outputs` for each framework output dir.
+- Use `turbo run build` on Vercel (filters inferred by root).
+- Ensure `turbo.json` defines `tasks.build.outputs` for each framework output dir.
   - Next.js: `[".next/**", "!.next/cache/**"]`
 - Never include `.next/cache/**` in outputs.
 - Declare task `env` and `globalEnv` in `turbo.json` to avoid stale cache hits.
@@ -88,7 +88,7 @@ Rules:
   - For AI/RAG code (paths `/agents/` `/rag/` `/mcp/` `/codex/` or AI/RAG
     imports), each exported function/class also needs `@see` (ADR/SPEC path or
     official docs URL) or `@remarks` containing `ADR-` or `SPEC-`.
-  - Tooling: run `pnpm lint:docs` (ESLint with TSDoc/JSDoc rules via
+- Tooling: run `pnpm lint` (ESLint with TSDoc/JSDoc rules via
     `eslint.config.js`) for syntax and tag ordering; AI/RAG `@see`/`@remarks`
     checks remain manual.
 - **Characters**:

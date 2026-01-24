@@ -1,15 +1,13 @@
 {
-  "$schema": "https://turborepo.dev/schema.json",
+  "$schema": "https://turborepo.dev/schema.v2.json",
   "globalDependencies": [
     "package.json",
     "pnpm-lock.yaml",
     "pnpm-workspace.yaml",
-    "tsconfig.json",
-    "biome.json",
-    "eslint.config.js",
-    ".env.example"
+    "tsconfig.json"
   ],
   "globalEnv": ["NODE_ENV", "VERCEL_ENV", "CI"],
+  "globalPassThroughEnv": ["CI", "GITHUB_TOKEN", "TURBO_TEAM", "TURBO_TOKEN"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
@@ -20,18 +18,33 @@
       "persistent": true,
       "interactive": true
     },
-    "//#lint": {
+    "lint": {
+      "outputs": []
+    },
+    "typecheck": {
+      "outputs": []
+    },
+    "test": {
+      "outputs": []
+    },
+    "format": {
       "cache": false,
       "outputs": []
     },
-    "//#fix": {
-      "cache": false
-    },
-    "//#test": {
+    "fix": {
       "cache": false,
-      "outputs": ["coverage/**"]
+      "outputs": []
     },
-    "//#typecheck": {
+    "codex:protocol:gen": {
+      "outputs": []
+    },
+    "codex:schema:gen": {
+      "outputs": []
+    },
+    "codex:gen": {
+      "outputs": []
+    },
+    "codex:gen:check": {
       "cache": false,
       "outputs": []
     }
