@@ -114,6 +114,15 @@ const rawConfigSchema = rawConfigPartSchema.superRefine((value, ctx) => {
         message: `Unknown serverId '${bundle.serverId}' referenced by bundle '${bundleId}'.`,
       });
     }
+
+    if (bundle.allowTools !== undefined && bundle.allowTools.length === 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["bundles", bundleId, "allowTools"],
+        message:
+          "allowTools cannot be empty. Omit allowTools to allow all tools (trusted servers only).",
+      });
+    }
   }
 });
 
