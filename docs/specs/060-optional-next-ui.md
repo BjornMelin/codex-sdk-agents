@@ -73,7 +73,7 @@ This spec is optional and should only be implemented after the CLI system is sta
 
 ### Configuration
 
-Configuration for concurrency, timeouts, and polling can be set via environment variables or config file (`.codex-toolloop/config.json`). Environment variables take precedence over config file settings.
+Configuration for concurrency, timeouts, and polling can be set via environment variables or config file (`.codex-toolloop/config.json`). Precedence order (highest to lowest): workflow-level override → environment variable → config file → built-in default.
 
 **Concurrency and timeout settings:**
 
@@ -98,12 +98,12 @@ Configuration for concurrency, timeouts, and polling can be set via environment 
 **Precedence and overrides:**
 
 - Environment variables override config file values; if both are set, env var wins.
-- Workflow-level overrides: Workflows can declare `ui.*` metadata in their definition (e.g., `timeout: 1800000` in the workflow spec) to request non-default values.
+- Workflow-level overrides: Workflows can declare `ui.*` metadata in their definition (e.g., `ui.runTimeoutMs: 1800000` in the workflow spec) to request non-default values, and these override env vars and config values.
 - Precedence order (highest to lowest): workflow-level override → environment variable → config file → built-in default.
 - Validation: UI must enforce a maximum timeout ceiling (e.g., 24 hours) to prevent runaway processes, and reject workflow-declared timeouts that exceed the ceiling.
 
-- **Streaming**: Initial version can poll `~/.codex-toolloop/index.jsonl` and events.jsonl for updates; WebSocket/SSE streaming is optional.
-  - **Polling intervals**: Use 1–5 seconds for events.jsonl (high-frequency updates) and 10–30 seconds for index.jsonl (less frequent changes). Adjust based on latency and resource constraints.
+- **Streaming**: Initial version can poll `~/.codex-toolloop/index.jsonl` and `~/.codex-toolloop/events.jsonl` for updates; WebSocket/SSE streaming is optional.
+  - **Polling intervals**: Use 1–5 seconds for `~/.codex-toolloop/events.jsonl` (high-frequency updates) and 10–30 seconds for `~/.codex-toolloop/index.jsonl` (less frequent changes). Adjust based on latency and resource constraints.
   - **Backoff strategy**: On repeated failures, implement exponential backoff (e.g., 2× delay up to a maximum of 30–60 seconds) to avoid overwhelming the filesystem and gracefully degrade when artifacts are unavailable.
   - **Error handling for missing/corrupt artifacts**:
     - Treat missing files as empty state (no runs, no events) rather than fatal errors; log the condition and continue polling.

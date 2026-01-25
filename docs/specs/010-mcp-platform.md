@@ -7,7 +7,7 @@ This SPEC defines the **MCP substrate** used by Codex ToolLoop:
 - a validated, multi-source MCP configuration format (file + env + runtime overrides)
 - MCP client lifecycle management (lazy connect, caching, deterministic cleanup)
 - transport support for:
-  - **STDIO** (experimental, local development only, Node-only) via AI SDK `Experimental_StdioMCPTransport` — **not production-ready**
+  - **STDIO** (experimental, local development only, Node-only) via AI SDK `Experimental_StdioMCPTransport` -- **not production-ready**
   - **HTTP** (production-ready, Streamable HTTP servers) via AI SDK `createMCPClient`
   - **SSE** (production-ready, legacy compatibility) via AI SDK transport config for legacy MCP servers
 
@@ -22,9 +22,9 @@ This SPEC defines the **MCP substrate** used by Codex ToolLoop:
    - tool catalog caching with TTL
    - deterministic cleanup (`closeAll`)
 3. Support required MCP transports:
-   - STDIO
-   - Streamable HTTP
-   - SSE compatibility
+   - STDIO.
+   - Streamable HTTP.
+   - SSE compatibility.
 
 ## Non-goals
 
@@ -59,8 +59,8 @@ Configuration sources (highest precedence wins):
 
 ### Environment variables
 
-- `CODEX_TOOLLOOP_MCP_CONFIG_PATH` — explicit JSON file path
-- `CODEX_TOOLLOOP_MCP_CONFIG_JSON` — JSON string containing a partial or full config
+- `CODEX_TOOLLOOP_MCP_CONFIG_PATH` -- explicit JSON file path
+- `CODEX_TOOLLOOP_MCP_CONFIG_JSON` -- JSON string containing a partial or full config
 
 ### File discovery
 
@@ -181,7 +181,7 @@ Key modules:
 Vitest coverage (v1):
 
 - config parsing + validation
-- config loading precedence (file vs env vs overrides)
+- config loading precedence (file vs. env vs. overrides)
 - client manager caching and deterministic cleanup
 
 Tests live in `tests/unit/*`.

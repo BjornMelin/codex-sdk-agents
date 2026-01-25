@@ -32,15 +32,22 @@ resolution and requirement allow-lists.
 - enforce version conflict checks
 - surface structured error codes
 
+Error codes:
+- `CONFIG_VERSION_CONFLICT`: Write attempted on stale version
+- `CONFIG_REQUIREMENT_VIOLATION`: Write violates allow-list requirements
+- `CONFIG_INVALID_PATH`: cwd path not found or inaccessible
+
 `configRequirements/read`:
 
 - returns allowed approval policies and sandbox modes, or null if not set.
 
 ## UI requirements
 
-- Display effective config and origin metadata.
-- Optionally show layers when `include_layers` is true.
-- Surface write conflicts with a clear resolution path.
+See docs/codex-config-layering.md for field-level details and examples.
+
+- Display effective config (resolved merged view) and origin metadata (layer source + scope).
+- Optionally show layers when `include_layers` is true (include layer breakdown in the UI).
+- Surface write conflicts with a clear resolution path (retry, merge, or abort).
 
 ## Acceptance criteria
 

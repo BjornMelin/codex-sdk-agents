@@ -47,6 +47,3 @@ opensrc/
 .agent/
 .agents/
 .firecrawl/
-
-# Turborepo
-.turbo

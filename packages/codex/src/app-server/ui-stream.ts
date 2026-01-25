@@ -324,8 +324,9 @@ export function createCodexAppServerUIStreamResponse(
         }
       });
 
+      const inputItems = options.input?.length ? options.input : undefined;
       const userInput: v2.UserInput =
-        options.input?.[0] ??
+        inputItems?.[0] ??
         ({
           type: "text",
           text: options.prompt,
@@ -334,7 +335,7 @@ export function createCodexAppServerUIStreamResponse(
 
       const turnStartParams: v2.TurnStartParams = {
         threadId,
-        input: options.input ?? [userInput],
+        input: inputItems ?? [userInput],
         cwd: options.cwd ?? null,
         approvalPolicy: options.approvalPolicy ?? null,
         sandboxPolicy: options.sandboxPolicy ?? null,

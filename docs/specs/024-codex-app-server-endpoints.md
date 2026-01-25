@@ -145,9 +145,9 @@ provider filtering are defined in:
 
 ## Acceptance criteria
 
-- Each request is exposed by the canonical client + bridge.
-- Each server request is handled and surfaced through the event stream.
-- Each notification is either mapped to an explicit event type or forwarded
+- All requests are exposed by the canonical client + bridge.
+- Server requests are handled and surfaced through the event stream.
+- Notifications are either mapped to an explicit event type or forwarded
   as a generic notification event.
 - Tests cover thread/read, archived list filtering, config/read layering,
   approvals, requestUserInput, collab tool calls, and account updates.

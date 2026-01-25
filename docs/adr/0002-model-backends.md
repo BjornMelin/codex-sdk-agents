@@ -71,8 +71,8 @@ Codex ToolLoop chooses the backend per workflow:
 
 - More implementation complexity (multiple backends).
 - Much better “fit” across use cases:
-  - workflows can use the best execution mode
-  - full logs and structured outputs are always possible
+  - workflows can use the best execution mode.
+  - full logs and structured outputs are always possible.
 
 ## Implementation notes
 

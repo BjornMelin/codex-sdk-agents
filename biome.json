@@ -7,10 +7,7 @@
     "lineWidth": 80
   },
   "files": {
-    "includes": [
-      "**/*",
-      "!!**/packages/codex-app-server-protocol/src/generated"
-    ]
+    "includes": ["**/*", "!**/packages/codex-app-server-protocol/src/generated"]
   },
   "linter": {
     "enabled": true,

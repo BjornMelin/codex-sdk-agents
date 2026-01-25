@@ -186,9 +186,11 @@ describe("createCodexAppServerEventMapper", () => {
       params: { name: "github", success: true },
     });
 
-    expect(events.some((event) => event.type === "codex.account.updated")).toBe(
-      true,
+    const accountUpdated = events.find(
+      (event) => event.type === "codex.account.updated",
     );
+    expect(accountUpdated).toBeDefined();
+    expect(accountUpdated?.authMode).toBe("apikey");
     expect(
       events.some((event) => event.type === "codex.account.rateLimits.updated"),
     ).toBe(true);

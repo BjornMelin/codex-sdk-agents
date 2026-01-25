@@ -188,14 +188,12 @@ Root Directory should remain the monorepo root unless a subproject deploy is int
 
 ## 6. References
 
-```text
-Vercel Turborepo monorepos: https://vercel.com/docs/monorepos/turborepo
-Vercel Next.js cache exclusion rule: https://vercel.com/docs/conformance/rules/NEXTJS_NO_TURBO_CACHE
-Turborepo config reference: https://turborepo.dev/schema.v2.json
-Turborepo env hashing: https://github.com/vercel/turborepo/blob/main/docs/site/content/docs/crafting-your-repository/using-environment-variables.mdx
-Turborepo Biome guide: https://turbo.build/repo/docs/guides/tools/biome
-Turborepo config (tasks vs pipeline): https://turborepo.dev/docs/reference/configuration
-Vercel remote caching: https://turbo.build/repo/docs/core-concepts/remote-caching
-Turborepo remote cache signature: https://vercel.com/docs/monorepos/turborepo/caching
-Vercel Remote Caching (setup): https://vercel.com/docs/monorepos/remote-caching
-```
+- [Vercel Turborepo monorepos](https://vercel.com/docs/monorepos/turborepo)
+- [Vercel Next.js cache exclusion rule](https://vercel.com/docs/conformance/rules/NEXTJS_NO_TURBO_CACHE)
+- [Turborepo config reference](https://turborepo.dev/schema.v2.json)
+- [Turborepo env hashing](https://github.com/vercel/turborepo/blob/main/docs/site/content/docs/crafting-your-repository/using-environment-variables.mdx)
+- [Turborepo Biome guide](https://turbo.build/repo/docs/guides/tools/biome)
+- [Turborepo config (tasks vs pipeline)](https://turborepo.dev/docs/reference/configuration)
+- [Vercel remote caching](https://turbo.build/repo/docs/core-concepts/remote-caching)
+- [Turborepo remote cache signature](https://docs.vercel.com/docs/rest-api/reference/endpoints/artifacts/upload-a-cache-artifact)
+- [Vercel Remote Caching (setup)](https://vercel.com/docs/monorepos/remote-caching)

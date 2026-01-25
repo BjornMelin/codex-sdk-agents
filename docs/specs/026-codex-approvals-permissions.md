@@ -53,6 +53,52 @@ UI must:
 `item/tool/requestUserInput` is EXPERIMENTAL and includes question metadata and
 optional options. Responses map question ids to answer arrays.
 
+Example request payload:
+
+```json
+{
+  "threadId": "thr_123",
+  "turnId": "turn_456",
+  "itemId": "item_789",
+  "questions": [
+    {
+      "id": "confirm",
+      "header": "Confirm action",
+      "question": "Proceed with the migration?",
+      "options": null
+    },
+    {
+      "id": "environment",
+      "header": "Target environment",
+      "question": "Where should we deploy?",
+      "options": [
+        { "label": "staging", "description": "Deploy to staging first" },
+        { "label": "prod", "description": "Deploy directly to production" }
+      ]
+    }
+  ]
+}
+```
+
+Example response payload:
+
+```json
+{
+  "answers": {
+    "confirm": { "answers": ["yes"] },
+    "environment": { "answers": ["staging"] }
+  }
+}
+```
+
+Usage notes:
+
+- Single-question flows send one question and a single answer array.
+- Multi-option flows include `options` and return the selected labels.
+- Multi-question flows return an `answers` map keyed by question id.
+- Clients should validate that answer keys match requested question ids and
+  respond with a user-visible error if required answers are missing.
+
 ## Acceptance criteria
 
 - Approval request payloads are surfaced as `CodexEvent` with full params.

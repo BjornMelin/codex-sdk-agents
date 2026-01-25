@@ -23,16 +23,19 @@ mechanism.
 `skills/list` returns entries by cwd with:
 
 - `skills`: array of `SkillMetadata`
-- `errors`: scan errors
+- `errors`: scan errors with `{ message: string, path?: string }`
 
 `SkillMetadata` includes:
 
-- `name`, `description`, `short_description` (legacy)
-- `interface` metadata: `display_name`, `short_description`, `icon_small`,
-  `icon_large`, `brand_color`, `default_prompt`
-- `path`, `scope`, `enabled`
+- `name: string`, `description: string`, `short_description: string` (legacy)
+- `interface` metadata: `display_name: string`, `short_description: string`,
+  `icon_small: string`, `icon_large: string`, `brand_color: string`,
+  `default_prompt: string`
+- `path: string`, `scope: string`, `enabled: boolean`
 
-`skills/config/write` accepts path + enabled and returns `effective_enabled`.
+`skills/config/write` accepts path + enabled and returns `effective_enabled`,
+which may differ from the requested enabled value when global policy or scope
+constraints override the user setting.
 
 ## UI requirements
 
