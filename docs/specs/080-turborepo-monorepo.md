@@ -117,7 +117,7 @@ TURBO_TEAM
 TURBO_TOKEN
 ```
 
-Reference: https://vercel.com/docs/monorepos/remote-caching
+Reference: [Vercel Remote Caching](https://vercel.com/docs/monorepos/remote-caching)
 
 #### Local development setup
 
@@ -154,7 +154,7 @@ env:
   TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 ```
 
-Reference: https://turborepo.dev/docs/guides/ci-vendors/github-actions
+Reference: [Turborepo GitHub Actions](https://turborepo.dev/docs/guides/ci-vendors/github-actions)
 
 ### 4.5 Package Task Parity (Required)
 
