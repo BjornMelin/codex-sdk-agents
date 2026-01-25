@@ -14,11 +14,11 @@ Codex ToolLoop needs:
 
 Codex integration options:
 
-- AI SDK Codex CLI provider: simplest, but more “one-shot” oriented.
+- AI SDK Codex CLI provider: simplest, but more "one-shot" oriented.
 - Codex App Server (JSONL-over-stdio): supports persistent threads, but no
   mid-execution injection.
-- Codex exec: stable CLI automation with JSONL and output schema.
-- Codex TypeScript SDK: programmatic control and resumable threads.
+- The exec mode: stable CLI automation with JSONL and output schema.
+- TypeScript SDK: programmatic control and resumable threads.
 
 Constraints:
 
@@ -108,7 +108,6 @@ References:
 
 - AI SDK codex app-server provider: <https://ai-sdk.dev/providers/community-providers/codex-app-server#codex-cli-app-server-provider>
 - Codex CLI reference: <https://developers.openai.com/codex/cli/reference/>
-- Codex config reference: <https://developers.openai.com/codex/config>
 
 ### 2026-01-23 -- App-server backend migrated to internal schema-driven client
 

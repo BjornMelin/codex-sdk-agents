@@ -142,7 +142,7 @@ pnpm dlx turbo login --sso-team=team-slug
 
 1) Create a Vercel Access Token and store it as a GitHub Actions secret:
    - Name: `TURBO_TOKEN`
-   - Recommended: use a dedicated token for CI and rotate it periodically (UNVERIFIED).
+   - Recommended: use a dedicated token for CI and rotate it periodically.
 2) Add your Vercel team slug as a GitHub Actions repository variable:
    - Name: `TURBO_TEAM`
    - Value: the slug after `vercel.com/` in your team URL (example: `vercel.com/acme` → `acme`)
