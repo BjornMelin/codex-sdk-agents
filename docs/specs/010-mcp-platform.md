@@ -113,6 +113,9 @@ Bundle config:
   - tool names are server-local (pre-namespacing)
   - `allowTools` is optional for **trusted** servers
   - `allowTools` is **required** for **untrusted** servers (enforced by SPEC 011)
+  - `allowTools` cannot be an empty array:
+    - omit `allowTools` to allow all tools (trusted servers only)
+    - when intersecting multiple allowlists (SPEC 011), an empty intersection means allow no tools
   - **Precedence rule**: When both `allowTools` and `denyTools` are present, apply `allowTools` first to produce an initial allowed set, then remove any entries matched by `denyTools`. In other words, **deny overrides allow**. Example: if `allowTools = ["read", "write", "delete"]` and `denyTools = ["delete"]`, the final allowed set is `["read", "write"]`.
 
 ### Public API

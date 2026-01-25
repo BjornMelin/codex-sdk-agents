@@ -101,6 +101,9 @@ This SPEC implements the v1 posture defined by ADR 0008:
   - no “allow all” exposure for untrusted servers
 - meta-tool policy merging is **restrictive**:
   - `allowTools`: intersection across selected bundles for the same server
+    - `undefined` means allow all tools from that server
+    - `[]` means allow no tools from that server (e.g., disjoint allowlists intersect to empty)
+      - `allowTools: []` is rejected in MCP config files (SPEC 010); this empty list is only produced by policy intersection during tool resolution
   - `denyTools`: union across bundles
 
 Additional safety bounds (meta tools):
