@@ -63,6 +63,10 @@ If the runtime dynamically fetches tool definitions at execution time, a server 
    - servers must be explicitly configured and tagged as trusted/untrusted
    - untrusted servers are never enabled by default
    - v1 enforcement: untrusted servers are **meta-only** (no direct tool-definition injection) and require explicit `allowTools`
+   - allowlist composition is restrictive:
+     - `allowTools` intersects across selected bundles for the same server
+     - disjoint allowlists produce an empty intersection, which means allow no tools (deny-by-default under composition)
+     - config authoring guardrail: `allowTools: []` is rejected in MCP config; omit `allowTools` to allow all tools (trusted servers only)
 
 2. **Prefer minimal tool exposure (dynamic tool loading)**
    - do not inject large tool catalogs into every model call
@@ -99,3 +103,4 @@ If the runtime dynamically fetches tool definitions at execution time, a server 
 ## Amendments
 
 - 2026-01-21: Clarified v1 enforcement for untrusted MCP servers (meta-only + allowlist required) to match SPEC 011 implementation.
+- 2026-01-25: Hardened allowlist intersection semantics to prevent empty intersections from widening tool access; added config validation to reject `allowTools: []` and require omission for allow-all (trusted only).

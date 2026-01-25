@@ -165,6 +165,10 @@ This reduces drift and prevents the model from being exposed to unreviewed tool 
 - Bundle definitions live in config (see SPEC 011).
 - Routing output is a first-class artifact (logged to run directory).
 - Tool schema and tool results are treated as untrusted input; apply the security posture in ADR 0008.
+- Meta-bundle policy composition is deny-by-default under composition:
+  - `allowTools` intersects across selected bundles for the same server.
+  - An empty intersection means allow no tools (this prevents privilege expansion when combining bundles).
+  - MCP config authoring rule: `allowTools: []` is rejected; omit `allowTools` to allow all tools (trusted servers only).
 
 ## References
 
@@ -186,3 +190,7 @@ Stability and safety:
 Provider-specific minimization (optional):
 
 - Anthropic provider tool search: <https://ai-sdk.dev/providers/ai-sdk-providers/anthropic>
+
+## Amendments
+
+- 2026-01-25: Clarified restrictive allowlist intersection semantics for meta bundles and added a config guardrail rejecting `allowTools: []` to prevent accidental allow-all/deny-all ambiguity.
