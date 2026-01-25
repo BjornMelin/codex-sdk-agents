@@ -55,8 +55,9 @@ This spec is optional and should only be implemented after the CLI system is sta
     - **Allowlist configuration:**
       - Read `ui.allowedWorkflows` from `.codex-toolloop/config.json` if present
       - Allowed workflows format: `ui.allowedWorkflows: string[]` (array of workflow names)
-      - Default behavior: if `ui.allowedWorkflows` is not set or empty, allow all discovered project workflows
-      - If `ui.allowedWorkflows` is configured, only allow workflows in that list
+      - Default behavior: if `ui.allowedWorkflows` is undefined (not present), allow all discovered project workflows
+      - If `ui.allowedWorkflows` is an empty array, treat as deny-all
+      - If `ui.allowedWorkflows` contains entries, only allow workflows in that list
     - **Validation failure handling:**
       - Return HTTP 400 Bad Request with a descriptive JSON error message (include field name, constraint violated, and expected format)
       - Log all validation failures to a security audit log (e.g., `.codex-toolloop/ui-validation-audit.jsonl`) with timestamp, source IP (loopback), workflow name, and error reason

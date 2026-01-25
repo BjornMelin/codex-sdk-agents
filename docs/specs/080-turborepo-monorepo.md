@@ -98,7 +98,7 @@ Update root `package.json` scripts to align with Turbo + Biome + ESLint docs lin
 
 Add `turbo` to root `devDependencies` so local and CI builds match Vercel behavior.
 
-- Required version: `^2.7.5` (latest in registry).
+- Required version: `^2.7.5`.
 
 ### 4.4 Remote Cache (Required)
 

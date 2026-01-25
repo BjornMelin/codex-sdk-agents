@@ -15,7 +15,8 @@ Codex ToolLoop needs:
 Codex integration options:
 
 - AI SDK Codex CLI provider: simplest, but more “one-shot” oriented.
-- AI SDK Codex App Server provider: supports persistent threads and mid-execution injection.
+- AI SDK Codex App Server provider: supports persistent threads, but no
+  mid-execution injection.
 - Codex exec: stable CLI automation with JSONL and output schema.
 - Codex TypeScript SDK: programmatic control and resumable threads.
 
@@ -87,7 +88,7 @@ Codex ToolLoop chooses the backend per workflow:
 ## References (informational)
 
 - Codex exec supports JSONL events and output schemas.
-- AI SDK Codex App Server provider supports injection and persistent threads.
+- AI SDK Codex App Server provider supports persistent threads (no injection).
 
 ## Amendments
 

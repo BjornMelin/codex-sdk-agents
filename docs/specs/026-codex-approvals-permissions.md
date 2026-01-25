@@ -1,7 +1,7 @@
 ---
 id: SPEC-026
 title: Codex approvals, execpolicy, and permissions UI
-status: Completed
+status: Draft
 date: 2026-01-23
 related_adrs:
   - docs/adr/0008-security.md
@@ -24,16 +24,21 @@ first-class UI that mirrors Codex CLI permissions and execpolicy behavior.
 
 `item/commandExecution/requestApproval` includes:
 
+- `threadId` (required)
+- `turnId` (required)
+- `itemId` (required)
+- `reason` (required)
 - `command` (optional)
 - `cwd` (optional)
-- `command_actions` (optional list of parsed actions)
-- `proposed_execpolicy_amendment` (optional)
+- `commandActions` (optional list of parsed actions)
+- `proposedExecpolicyAmendment` (required, non-nullable)
 
 UI must:
 
-- Render command, cwd, and parsed actions when present.
+- Render reason, command, cwd, and parsed actions when present.
 - Support accept / decline.
-- Support accept + execpolicy amendment (persist to config).
+- Support accept + execpolicy amendment (persist to config via
+  `proposedExecpolicyAmendment`).
 
 ## File change approvals
 
@@ -103,5 +108,10 @@ Usage notes:
 
 - Approval request payloads are surfaced as `CodexEvent` with full params.
 - Approvals accept/deny and accept-with-amendment are wired to
-  `config/value/write` or `config/batchWrite`.
+  `config/value/write` or `config/batchWrite`. Use `config/value/write` for
+  single approval amendments or simple single-key updates (example: accept a
+  command approval and toggle one execpolicy key). Use `config/batchWrite` for
+  multiple simultaneous amendments or complex multi-key updates (example:
+  accept-with-amendment that updates several execpolicy fields together). This
+  keeps single-key writes lean and avoids partial updates for multi-key changes.
 - Tests cover command + file change approvals and user input responses.

@@ -29,15 +29,15 @@ interactive flows using AI SDK v6.
 
 The UI message model and streaming chunks are defined by AI SDK:
 
-- `ui-messages.ts` — UIMessage parts and tool approval states.
-- `ui-message-chunks.ts` — stream chunk types (`start`, `text-start`,
+- `ui-messages.ts` -- UIMessage parts and tool approval states.
+- `ui-message-chunks.ts` -- stream chunk types (`start`, `text-start`,
   `text-delta`, `text-end`, `reasoning-start`, `reasoning-delta`,
   `reasoning-end`, `error`, `tool-input-start`, `tool-input-delta`,
   `tool-input-available`, `tool-input-error`, `tool-approval-request`,
   `tool-output-available`, `tool-output-error`, `tool-output-denied`,
   `source-url`, `source-document`, `file`, `data-*`, `start-step`,
   `finish-step`, `finish`, `abort`, `message-metadata`).
-- `process-ui-message-stream.ts` — state machine for approvals and tool calls.
+- `process-ui-message-stream.ts` -- state machine for approvals and tool calls.
 
 ## Required contract
 
