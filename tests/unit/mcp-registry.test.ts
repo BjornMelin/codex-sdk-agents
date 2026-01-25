@@ -123,4 +123,81 @@ describe("DynamicToolRegistry", () => {
 
     expect(res).toEqual({ ok: true, result: { text: "hi" } });
   });
+
+  it("does not widen meta allowlists when intersections are empty", async () => {
+    const manager = new McpClientManager({
+      servers: {
+        thirdParty: {
+          id: "thirdParty",
+          trust: "untrusted",
+          transport: { type: "http", url: "http://localhost/tp" },
+        },
+      },
+      toolsTtlMs: 60_000,
+      factory: async () =>
+        makeClient({
+          a: tool({
+            description: "tool a",
+            inputSchema: z.object({}),
+            execute: async () => ({ tool: "a" }),
+          }),
+          b: tool({
+            description: "tool b",
+            inputSchema: z.object({}),
+            execute: async () => ({ tool: "b" }),
+          }),
+        } satisfies McpToolSet),
+    });
+
+    const registry = new DynamicToolRegistry({
+      config: {
+        servers: {
+          thirdParty: {
+            id: "thirdParty",
+            trust: "untrusted",
+            transport: { type: "http", url: "http://localhost/tp" },
+          },
+        },
+        bundles: {
+          onlyA: {
+            id: "onlyA",
+            serverId: "thirdParty",
+            mode: "meta",
+            allowTools: ["a"],
+          },
+          onlyB: {
+            id: "onlyB",
+            serverId: "thirdParty",
+            mode: "meta",
+            allowTools: ["b"],
+          },
+        },
+      },
+      clientManager: manager,
+    });
+
+    const tools = await registry.resolveTools(["onlyA", "onlyB"]);
+    const callTool = tools["mcp.callTool"] as unknown as {
+      execute: (input: unknown, options: unknown) => Promise<unknown>;
+    };
+
+    await expect(
+      callTool.execute({ serverId: "thirdParty", toolName: "a", args: {} }, {}),
+    ).resolves.toEqual({
+      ok: false,
+      error:
+        "Tool 'a' is not allowed or does not exist on server 'thirdParty'.",
+    });
+
+    const toolsOnlyA = await registry.resolveTools(["onlyA"]);
+    const callToolOnlyA = toolsOnlyA["mcp.callTool"] as unknown as {
+      execute: (input: unknown, options: unknown) => Promise<unknown>;
+    };
+    await expect(
+      callToolOnlyA.execute(
+        { serverId: "thirdParty", toolName: "a", args: {} },
+        {},
+      ),
+    ).resolves.toEqual({ ok: true, result: { tool: "a" } });
+  });
 });

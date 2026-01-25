@@ -42,6 +42,28 @@ describe("parseMcpConfig", () => {
     }).toThrowError(/unknown serverId/i);
   });
 
+  it("rejects empty allowTools arrays", () => {
+    const parse = () =>
+      parseMcpConfig({
+        servers: {
+          repo: {
+            trust: "trusted",
+            transport: { type: "http", url: "http://localhost:4010/mcp" },
+          },
+        },
+        bundles: {
+          repoAll: {
+            serverId: "repo",
+            mode: "meta",
+            allowTools: [],
+          },
+        },
+      });
+
+    expect(parse).toThrowError(/allowTools cannot be empty/i);
+    expect(parse).toThrowError(/omit allowTools/i);
+  });
+
   it("accepts stdio servers with explicit stderr routing", () => {
     const config = parseMcpConfig({
       servers: {
