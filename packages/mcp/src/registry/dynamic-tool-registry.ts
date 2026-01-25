@@ -45,41 +45,22 @@ function mergeToolSets(toolSets: ToolSet[]): ToolSet {
   return sorted as ToolSet;
 }
 
-/**
- * Normalize an allow list, treating empty as undefined.
- *
- * @param allowTools - Allow list to normalize.
- * @returns Normalized allow list or undefined.
- */
-function normalizeAllow(
-  allowTools: string[] | undefined,
-): string[] | undefined {
-  if (!allowTools || allowTools.length === 0) {
-    return undefined;
-  }
-  return allowTools;
-}
-
 function intersectAllowLists(
   a: string[] | undefined,
   b: string[] | undefined,
 ): string[] | undefined {
-  const left = normalizeAllow(a);
-  const right = normalizeAllow(b);
-
-  if (!left && !right) {
+  if (a === undefined && b === undefined) {
     return undefined;
   }
-  if (!left) {
-    return right;
+  if (a === undefined) {
+    return b;
   }
-  if (!right) {
-    return left;
+  if (b === undefined) {
+    return a;
   }
 
-  const set = new Set(right);
-  const intersection = left.filter((name) => set.has(name));
-  return normalizeAllow(intersection);
+  const set = new Set(b);
+  return a.filter((name) => set.has(name));
 }
 
 function mergeMetaPolicy(

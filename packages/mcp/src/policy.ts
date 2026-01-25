@@ -31,11 +31,12 @@ export function filterToolNames(
   names: readonly string[],
   policy: ToolAccessPolicy,
 ): string[] {
+  const allowAll = policy.allowTools === undefined;
   const allow = toSet(policy.allowTools);
   const deny = toSet(policy.denyTools);
 
   const filtered = names.filter((name) => {
-    const allowed = allow.size === 0 ? true : allow.has(name);
+    const allowed = allowAll ? true : allow.has(name);
     return allowed && !deny.has(name);
   });
 

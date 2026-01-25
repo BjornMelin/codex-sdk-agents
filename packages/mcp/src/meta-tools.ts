@@ -13,7 +13,8 @@ export type McpMetaToolPolicy = {
   /**
    * Tool allowlist for a specific MCP server.
    *
-   * - `undefined` or `[]`: allow all tools from the server
+   * - `undefined`: allow all tools from the server
+   * - `[]`: allow no tools from the server
    */
   allowTools?: string[];
   /** Tool denylist for a specific MCP server. */
