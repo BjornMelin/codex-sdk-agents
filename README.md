@@ -408,6 +408,3 @@ If you use `codex-toolloop` in academic work or technical reports, cite it as so
   url     = {https://github.com/BjornMelin/codex-toolloop}
 }
 ```
-
-Tip: GitHub supports citation metadata via `CITATION.cff` (optional). If you add it at the repo root, GitHub can display a “Cite this repository” widget automatically.
-<https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-citation-files>
