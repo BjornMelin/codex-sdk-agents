@@ -50,4 +50,3 @@ See `examples/stream.ts`.
 ## Programmatic (SDK) with structured output
 
 See `examples/review.ts` and `docs/structured-outputs.md`.
-

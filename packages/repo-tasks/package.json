@@ -1,0 +1,27 @@
+{
+  "name": "@codex-toolloop/repo-tasks",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "lint": "pnpm -w exec biome check . && pnpm -w exec eslint . --ext .ts,.tsx --max-warnings=0",
+    "typecheck": "pnpm -w exec tsc -p tsconfig.json --noEmit",
+    "test": "pnpm -w exec vitest run --config vitest.config.ts",
+    "format": "pnpm -w exec biome format --write .",
+    "fix": "pnpm -w exec biome format --write . && pnpm -w exec biome check --fix .",
+    "codex:protocol:gen": "pnpm -w exec mkdir -p packages/codex-app-server-protocol/src/generated && pnpm -w exec codex app-server generate-ts --out packages/codex-app-server-protocol/src/generated && pnpm -w exec node scripts/codex-app-server-protocol-postprocess.mjs",
+    "codex:schema:gen": "pnpm -w exec mkdir -p tools/codex-schemas/app-server-protocol && pnpm -w exec codex app-server generate-json-schema --out tools/codex-schemas/app-server-protocol",
+    "codex:gen": "pnpm -s codex:protocol:gen && pnpm -s codex:schema:gen",
+    "codex:gen:check": "pnpm -s codex:gen && pnpm -w exec git diff --exit-code -- packages/codex-app-server-protocol/src/generated tools/codex-schemas/app-server-protocol"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.3.11",
+    "@typescript-eslint/parser": "^8.53.1",
+    "eslint": "^9.39.2",
+    "eslint-plugin-jsdoc": "^62.3.1",
+    "eslint-plugin-tsdoc": "^0.5.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
+  }
+}

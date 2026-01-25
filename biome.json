@@ -4,7 +4,10 @@
     "enabled": true,
     "indentStyle": "space",
     "indentWidth": 2,
-    "lineWidth": 100
+    "lineWidth": 80
+  },
+  "files": {
+    "includes": ["**/*", "!**/packages/codex-app-server-protocol/src/generated"]
   },
   "linter": {
     "enabled": true,

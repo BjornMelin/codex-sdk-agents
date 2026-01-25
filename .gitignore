@@ -19,12 +19,13 @@ pnpm-debug.log*
 .env.*
 !.env.example
 
-# Bun
-.bun/
-bun.lockb
-
 # Local Codex workspace data
 .codex/
+docs/research/
+
+# Generated Codex JSON schema bundles (reproducible artifacts)
+tools/codex-schemas/
+tools/.trash/
 
 # Tooling caches
 .eslintcache
@@ -44,4 +45,5 @@ opensrc/
 .claude/
 .cursor/
 .agent/
-
+.agents/
+.firecrawl/

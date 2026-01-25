@@ -1,0 +1,9 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+
+# pnpm v10 blocks dependency lifecycle scripts by default.
+# Keep this list minimal and audited.
+allowBuilds:
+  "@biomejs/biome": true
+  esbuild: true

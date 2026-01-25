@@ -27,7 +27,10 @@ export type CodeReviewOutput = z.infer<typeof CodeReviewOutputSchema>;
 
 export const codeReviewJsonSchema = z.toJSONSchema(CodeReviewOutputSchema);
 
-export function buildCodeReviewPrompt(args: { diff: string; extraFocus?: string }): string {
+export function buildCodeReviewPrompt(args: {
+  diff: string;
+  extraFocus?: string;
+}): string {
   const focus = args.extraFocus?.trim();
   const focusLine = focus ? `Extra focus: ${focus}\n\n` : "";
 

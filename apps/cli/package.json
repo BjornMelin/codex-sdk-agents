@@ -1,0 +1,14 @@
+{
+  "name": "@codex-toolloop/cli",
+  "version": "0.1.0",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc -p tsconfig.json"
+  },
+  "devDependencies": {
+    "tsx": "^4.21.0"
+  }
+}

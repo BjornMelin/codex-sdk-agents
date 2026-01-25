@@ -1,9 +1,15 @@
 # Getting started
 
+## Requirements
+
+- Node.js v24 LTS (ADR 0001)
+- pnpm (via Corepack)
+- OpenAI Codex CLI (`codex`)
+
 ## Install
 
 ```bash
-bun install
+pnpm install
 ```
 
 ## Authenticate
@@ -16,13 +22,13 @@ Two common setups:
 ## Run examples
 
 ```bash
-bun run examples:basic
-bun run examples:stream
-bun run examples:structured
+pnpm examples:basic
+pnpm examples:stream
+pnpm examples:structured
 ```
 
 ## Run checks
 
 ```bash
-bun run check
+pnpm -s check
 ```
