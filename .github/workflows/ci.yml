@@ -11,6 +11,9 @@ jobs:
     name: Lint (Biome)
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: ./.github/actions/ci-setup
       - name: Run Turbo lint
         env:
@@ -26,6 +29,9 @@ jobs:
     name: Typecheck
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: ./.github/actions/ci-setup
       - name: Run Turbo typecheck
         env:
@@ -41,6 +47,9 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: ./.github/actions/ci-setup
       - name: Run Turbo test
         env:
@@ -56,6 +65,9 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: ./.github/actions/ci-setup
       - name: Run Turbo build + codex:gen:check
         env:
