@@ -1,4 +1,4 @@
-# ADR 0002: Multi-backend Codex integration (AI SDK app-server default)
+# ADR 0002: Multi-backend Codex integration (app-server default)
 
 ## Status
 
@@ -15,7 +15,7 @@ Codex ToolLoop needs:
 Codex integration options:
 
 - AI SDK Codex CLI provider: simplest, but more “one-shot” oriented.
-- AI SDK Codex App Server provider: supports persistent threads, but no
+- Codex App Server (JSONL-over-stdio): supports persistent threads, but no
   mid-execution injection.
 - Codex exec: stable CLI automation with JSONL and output schema.
 - Codex TypeScript SDK: programmatic control and resumable threads.
@@ -29,7 +29,7 @@ Constraints:
 
 Codex ToolLoop will implement three backends behind a single `CodexBackend` interface:
 
-1. Default: AI SDK Codex App Server provider backend
+1. Default: Codex App Server (JSONL-over-stdio) backend
 
    - For interactive multi-step runs
    - For persistent thread mode
@@ -88,7 +88,7 @@ Codex ToolLoop chooses the backend per workflow:
 ## References (informational)
 
 - Codex exec supports JSONL events and output schemas.
-- AI SDK Codex App Server provider supports persistent threads (no injection).
+- Codex App Server (JSONL-over-stdio) supports persistent threads (no injection).
 
 ## Amendments
 
