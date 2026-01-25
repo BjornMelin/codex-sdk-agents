@@ -86,14 +86,14 @@ If you already use Codex daily, you typically want two things that plain “chat
 flowchart LR
   Dev[Developer] -->|CLI commands| CLI[toolloop CLI]
 
-  CLI --> RT[Workflow runtime\n(roles + steps + policies)]
-  RT -->|stream + events| Codex[Codex backend\n(app-server / exec / sdk)]
+  CLI --> RT["Workflow runtime<br/>(roles + steps + policies)"]
+  RT -->|stream + events| Codex["Codex backend<br/>(app-server / exec / sdk)"]
   Codex --> Repo[(Repo workspace)]
 
-  RT --> Artifacts[Run artifacts\n(JSONL traces, reports, diffs)]
+  RT --> Artifacts["Run artifacts<br/>(JSONL traces, reports, diffs)"]
 
   RT <-->|discover + call tools| Tools[Tool substrate]
-  Tools -->|local HTTP or stdio| ToolServers[Tool servers\n(first-party + third-party)]
+  Tools -->|local HTTP or stdio| ToolServers["Tool servers<br/>(first-party + third-party)"]
 ```
 
 ### Feature development run (sequence)
