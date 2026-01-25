@@ -11,17 +11,7 @@ jobs:
     name: Lint (Biome)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: pnpm/action-setup@v3
-        with:
-          version: "10.28.1"
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: "package.json"
-          cache: "pnpm"
-      - run: pnpm install --frozen-lockfile
+      - uses: ./.github/actions/ci-setup
       - name: Run Turbo lint
         env:
           TURBO_TEAM: ${{ vars.TURBO_TEAM }}
@@ -36,17 +26,7 @@ jobs:
     name: Typecheck
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: pnpm/action-setup@v3
-        with:
-          version: "10.28.1"
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: "package.json"
-          cache: "pnpm"
-      - run: pnpm install --frozen-lockfile
+      - uses: ./.github/actions/ci-setup
       - name: Run Turbo typecheck
         env:
           TURBO_TEAM: ${{ vars.TURBO_TEAM }}
@@ -61,17 +41,7 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: pnpm/action-setup@v3
-        with:
-          version: "10.28.1"
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: "package.json"
-          cache: "pnpm"
-      - run: pnpm install --frozen-lockfile
+      - uses: ./.github/actions/ci-setup
       - name: Run Turbo test
         env:
           TURBO_TEAM: ${{ vars.TURBO_TEAM }}
@@ -86,17 +56,7 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: pnpm/action-setup@v3
-        with:
-          version: "10.28.1"
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: "package.json"
-          cache: "pnpm"
-      - run: pnpm install --frozen-lockfile
+      - uses: ./.github/actions/ci-setup
       - name: Run Turbo build + codex:gen:check
         env:
           TURBO_TEAM: ${{ vars.TURBO_TEAM }}

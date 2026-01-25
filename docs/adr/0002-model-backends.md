@@ -8,7 +8,7 @@ Accepted
 
 Codex ToolLoop needs:
 
-- Codex as the primary coding model using ChatGPT subscription auth.
+- Codex as the primary coding model supporting both ChatGPT subscription (Sign in with ChatGPT OAuth) and standard OpenAI API key authentication.
 - Strong support for multi-step sessions, tool visibility, and course correction.
 - Scriptable and deterministic modes for automation pipelines.
 

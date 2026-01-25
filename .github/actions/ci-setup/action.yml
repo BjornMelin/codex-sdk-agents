@@ -1,0 +1,32 @@
+name: CI Setup
+description: "Shared CI setup: checkout, pnpm, node, install"
+
+inputs:
+  node-version-file:
+    description: "Path to node version file (default: package.json)"
+    required: false
+    default: "package.json"
+  pnpm-version:
+    description: "pnpm version to install (default: 10.28.1)"
+    required: false
+    default: "10.28.1"
+  fetch-depth:
+    description: "Fetch depth for checkout (default: 0)"
+    required: false
+    default: "0"
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: ${{ inputs.fetch-depth }}
+    - uses: pnpm/action-setup@v3
+      with:
+        version: ${{ inputs.pnpm-version }}
+    - uses: actions/setup-node@v4
+      with:
+        node-version-file: ${{ inputs.node-version-file }}
+        cache: pnpm
+    - run: pnpm install --frozen-lockfile
+      shell: bash
